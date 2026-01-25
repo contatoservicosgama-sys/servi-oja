@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   LayoutDashboard, 
   Users, 
@@ -14,14 +14,17 @@ import {
   LogOut,
   ChevronRight,
   ExternalLink,
-  Globe
+  Globe,
+  Bell
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { dataService } from '../services/dataService';
+import { ProviderStatus, PaymentStatus } from '../types';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/prestadores', label: 'Prestadores', icon: Users },
-  { path: '/admin/pagamentos', label: 'Pagamentos PIX', icon: CreditCard },
+  { path: '/admin/prestadores', label: 'Prestadores', icon: Users, badgeKey: 'pendingProviders' },
+  { path: '/admin/pagamentos', label: 'Pagamentos PIX', icon: CreditCard, badgeKey: 'pendingPayments' },
   { path: '/admin/vencimentos', label: 'Vencimentos', icon: CalendarClock },
   { path: '/admin/servicos', label: 'Serviços', icon: Wrench },
   { path: '/admin/cidades', label: 'Cidades', icon: MapPin },
@@ -33,6 +36,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const counts = useMemo(() => {
+    const providers = dataService.getProviders();
+    const payments = dataService.getPayments();
+    return {
+      pendingProviders: providers.filter(p => p.status === ProviderStatus.PENDING).length,
+      pendingPayments: payments.filter(p => p.status === PaymentStatus.PENDING).length
+    };
+  }, [location.pathname]); // Atualiza ao navegar
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -77,6 +89,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.endsWith(item.path));
+            const badgeValue = item.badgeKey ? (counts as any)[item.badgeKey] : 0;
+            
             return (
               <Link
                 key={item.path}
@@ -91,7 +105,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-indigo-600 transition-colors'} />
                   <span className="text-sm tracking-tight">{item.label}</span>
                 </div>
-                {isActive && <ChevronRight size={14} className="opacity-50" />}
+                <div className="flex items-center gap-2">
+                  {badgeValue > 0 && !isActive && (
+                    <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                      {badgeValue}
+                    </span>
+                  )}
+                  {isActive && <ChevronRight size={14} className="opacity-50" />}
+                </div>
               </Link>
             );
           })}

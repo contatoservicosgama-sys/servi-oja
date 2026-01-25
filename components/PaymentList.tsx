@@ -6,7 +6,11 @@ import {
   Eye, 
   History,
   Info,
-  ExternalLink
+  ExternalLink,
+  MessageCircle,
+  Smartphone,
+  // Fix: added missing CreditCard icon import
+  CreditCard
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { Payment, PaymentStatus, ProviderStatus } from '../types';
@@ -15,7 +19,7 @@ export const PaymentList: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>(dataService.getPayments());
   const providers = dataService.getProviders();
 
-  const getProviderName = (id: string) => providers.find(p => p.id === id)?.name || 'N/A';
+  const getProvider = (id: string) => providers.find(p => p.id === id);
 
   const updatePaymentStatus = (payment: Payment, status: PaymentStatus) => {
     const updatedPayment = { ...payment, status };
@@ -24,12 +28,8 @@ export const PaymentList: React.FC = () => {
     if (status === PaymentStatus.APPROVED) {
       const provider = providers.find(p => p.id === payment.providerId);
       if (provider) {
-        // Lógica de Renovação: 30 dias a partir do vencimento atual ou de hoje (o que for maior)
         const now = new Date();
         const currentDue = new Date(provider.dueDate);
-        
-        // Se o plano ainda não venceu, soma 30 dias ao vencimento atual. 
-        // Se já venceu, soma 30 dias a partir de hoje.
         const baseDate = currentDue > now ? currentDue : now;
         
         const newDueDate = new Date(baseDate);
@@ -40,96 +40,112 @@ export const PaymentList: React.FC = () => {
           status: ProviderStatus.ACTIVE,
           dueDate: newDueDate.toISOString()
         });
+        alert(`Pagamento confirmado! O perfil de ${provider.name} foi ativado até ${newDueDate.toLocaleDateString('pt-BR')}.`);
       }
     }
 
     setPayments(dataService.getPayments());
   };
 
-  const openWhatsAppRejection = (providerId: string) => {
-    const provider = providers.find(p => p.id === providerId);
-    if (!provider) return;
-
+  const openWhatsApp = (phone: string, name: string, isRejection = false) => {
     const templates = dataService.getTemplates();
-    const rejectTpl = templates.find(t => t.type === 'Pagamento Rejeitado');
-    const message = encodeURIComponent(rejectTpl?.content || 'Seu comprovante de pagamento foi rejeitado. Verifique seus dados.');
-    window.open(`https://wa.me/55${provider.phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+    const type = isRejection ? 'Pagamento Rejeitado' : 'Pagamento Aprovado';
+    const tpl = templates.find(t => t.type === type);
+    const message = encodeURIComponent(tpl?.content || `Olá ${name}, sobre seu pagamento no Serviços Já...`);
+    window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
   };
 
   return (
-    <div className="space-y-6">
-      <header className="flex justify-between items-end">
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Validação de Pagamentos</h2>
-          <p className="text-slate-500">Aprove os comprovantes PIX para liberar os anúncios.</p>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Validação de Pagamentos</h2>
+          <p className="text-slate-500 font-medium">Aprove comprovantes para liberar anúncios instantaneamente.</p>
         </div>
       </header>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Prestador</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Valor</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Data</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Ações</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Prestador</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Valor / Data</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Ação de Ativação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {payments.length > 0 ? [...payments].reverse().map((payment) => (
-                <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4 font-bold text-slate-900">
-                    {getProviderName(payment.providerId)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-black text-indigo-600">R$ {payment.value.toFixed(2)}</span>
-                  </td>
-                  <td className="px-6 py-4 text-slate-500 text-sm">
-                    {new Date(payment.date).toLocaleDateString('pt-BR')}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      payment.status === PaymentStatus.APPROVED ? 'bg-emerald-100 text-emerald-700' :
-                      payment.status === PaymentStatus.PENDING ? 'bg-amber-100 text-amber-700' :
-                      'bg-rose-100 text-rose-700'
-                    }`}>
-                      {payment.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      {payment.status === PaymentStatus.PENDING ? (
-                        <>
+              {payments.length > 0 ? [...payments].reverse().map((payment) => {
+                const provider = getProvider(payment.providerId);
+                return (
+                  <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 text-lg">{provider?.name || 'N/A'}</span>
+                        {provider && (
                           <button 
-                            onClick={() => updatePaymentStatus(payment, PaymentStatus.APPROVED)}
-                            className="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-1.5"
+                            onClick={() => openWhatsApp(provider.phone, provider.name)}
+                            className="flex items-center gap-1.5 text-xs text-indigo-600 font-black hover:underline mt-1"
                           >
-                            <CheckCircle2 size={14} /> Aprovar
+                            <MessageCircle size={14} /> {provider.phone}
                           </button>
-                          <button 
-                            onClick={() => {
-                              updatePaymentStatus(payment, PaymentStatus.REJECTED);
-                              openWhatsAppRejection(payment.providerId);
-                            }}
-                            className="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-600 hover:text-white transition-all flex items-center gap-1.5"
-                          >
-                            <XCircle size={14} /> Rejeitar
-                          </button>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-bold">
-                          <History size={14} /> Histórico
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )) : (
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="font-black text-slate-900 tracking-tight">R$ {payment.value.toFixed(2)}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                          {new Date(payment.date).toLocaleDateString('pt-BR')}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                        payment.status === PaymentStatus.APPROVED ? 'bg-emerald-100 text-emerald-700' :
+                        payment.status === PaymentStatus.PENDING ? 'bg-amber-100 text-amber-700 animate-pulse' :
+                        'bg-rose-100 text-rose-700'
+                      }`}>
+                        {payment.status}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex justify-end gap-3">
+                        {payment.status === PaymentStatus.PENDING ? (
+                          <>
+                            <button 
+                              onClick={() => updatePaymentStatus(payment, PaymentStatus.APPROVED)}
+                              className="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-2 shadow-lg shadow-emerald-100 active:scale-95"
+                            >
+                              <CheckCircle2 size={16} /> Aprovar e Ativar
+                            </button>
+                            <button 
+                              onClick={() => {
+                                updatePaymentStatus(payment, PaymentStatus.REJECTED);
+                                if (provider) openWhatsApp(provider.phone, provider.name, true);
+                              }}
+                              className="bg-white text-rose-500 border border-rose-100 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center gap-2 active:scale-95"
+                            >
+                              <XCircle size={16} /> Rejeitar
+                            </button>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 text-[10px] text-slate-400 font-black uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-xl">
+                            <History size={14} /> Processado
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 italic">
-                    Nenhum pagamento pendente no momento.
+                  <td colSpan={4} className="px-8 py-20 text-center">
+                    <div className="opacity-20 flex flex-col items-center gap-2">
+                       <CreditCard size={48} />
+                       <p className="font-black uppercase tracking-widest text-sm">Nenhum pagamento pendente</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -138,15 +154,14 @@ export const PaymentList: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 flex items-start gap-4">
-        <div className="bg-indigo-100 p-2 rounded-xl text-indigo-600 shrink-0">
-          <Info size={20} />
+      <div className="bg-indigo-600 p-8 rounded-[2.5rem] text-white flex flex-col sm:flex-row items-center gap-6 shadow-2xl shadow-indigo-100">
+        <div className="bg-white/20 p-4 rounded-3xl shrink-0">
+          <Info size={32} />
         </div>
         <div>
-          <h4 className="font-bold text-indigo-900 text-sm mb-1">Como funciona a renovação?</h4>
-          <p className="text-xs text-indigo-700 leading-relaxed">
-            Ao clicar em <strong>Aprovar</strong>, o sistema soma 30 dias ao vencimento atual do prestador. 
-            Se o plano já estiver vencido, os 30 dias começam a contar a partir de hoje. O status do prestador muda automaticamente para <strong>Ativo</strong>.
+          <h4 className="font-black text-xl mb-1">Dica de Ativação</h4>
+          <p className="text-sm text-indigo-100 leading-relaxed font-medium">
+            Sempre confira o valor no seu banco antes de clicar em <strong>Aprovar</strong>. Ao confirmar, o sistema libera o acesso do profissional por 30 dias e envia uma notificação automática (opcional) no WhatsApp.
           </p>
         </div>
       </div>

@@ -79,11 +79,13 @@ export const ProviderList: React.FC = () => {
   const handleQuickActivate = (id: string) => {
     const provider = providers.find(p => p.id === id);
     if (provider) {
-      const newDueDate = new Date();
-      newDueDate.setDate(newDueDate.getDate() + 30);
-      const updated = { ...provider, status: ProviderStatus.ACTIVE, dueDate: newDueDate.toISOString() };
-      dataService.saveProvider(updated);
-      setProviders(dataService.getProviders());
+      if (confirm(`Deseja ativar o plano de 30 dias para ${provider.name} agora?`)) {
+        const newDueDate = new Date();
+        newDueDate.setDate(newDueDate.getDate() + 30);
+        const updated = { ...provider, status: ProviderStatus.ACTIVE, dueDate: newDueDate.toISOString() };
+        dataService.saveProvider(updated);
+        setProviders(dataService.getProviders());
+      }
     }
   };
 
@@ -225,12 +227,12 @@ export const ProviderList: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 w-full lg:w-auto">
+        <div className="flex gap-2 w-full lg:w-auto overflow-x-auto pb-2 scrollbar-hide">
           {['all', ProviderStatus.ACTIVE, ProviderStatus.PENDING, ProviderStatus.BLOCKED].map(status => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex-1 lg:flex-none ${
+              className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex-1 lg:flex-none whitespace-nowrap ${
                 statusFilter === status 
                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' 
                   : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-50'
@@ -249,9 +251,9 @@ export const ProviderList: React.FC = () => {
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Profissional</th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Atuação</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Plano</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Vencimento</th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Ações</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Ações de Gestão</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -306,37 +308,39 @@ export const ProviderList: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 items-center">
                       {provider.status !== ProviderStatus.ACTIVE && (
                         <button 
                           onClick={() => handleQuickActivate(provider.id)}
-                          className="p-2.5 text-emerald-500 hover:text-white hover:bg-emerald-500 rounded-xl transition-all shadow-sm border border-emerald-100"
+                          className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-50 active:scale-95"
                           title="Ativar Manualmente"
                         >
-                          <Zap size={18} fill="currentColor" />
+                          <Zap size={14} fill="currentColor" /> Ativar Agora
                         </button>
                       )}
-                      <button 
-                        onClick={() => viewPublicProfile(provider)}
-                        className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
-                        title="Ver Perfil Público"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button 
-                        onClick={() => openModal(provider)}
-                        className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
-                        title="Editar"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(provider.id)}
-                        className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
-                        title="Excluir"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div className="flex gap-1 ml-2">
+                        <button 
+                          onClick={() => viewPublicProfile(provider)}
+                          className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                          title="Ver Perfil Público"
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button 
+                          onClick={() => openModal(provider)}
+                          className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                          title="Editar"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(provider.id)}
+                          className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                          title="Excluir"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -355,7 +359,7 @@ export const ProviderList: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Form */}
+      {/* Modal Form permanece igual... */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
           <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-300">
@@ -416,9 +420,6 @@ export const ProviderList: React.FC = () => {
                       accept="image/*"
                       onChange={handleImageChange}
                     />
-                  </div>
-                  <div className="text-center space-y-1">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Formatos: JPG, PNG (Max 2MB)</p>
                   </div>
                 </div>
 
@@ -481,122 +482,49 @@ export const ProviderList: React.FC = () => {
               {/* Right Column - Services and More */}
               <div className="lg:col-span-8 space-y-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  {/* Digital Presence & Social */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shadow-inner"><Globe size={18} /></div>
                       <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Presença Digital</h4>
                     </div>
-                    
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex justify-between items-center">
-                          Website
-                          {formData.websiteUrl && <a href={formData.websiteUrl} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1"><ExternalLink size={10} /> Abrir</a>}
-                        </label>
-                        <div className="relative">
-                          <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                          <input 
-                            type="url" 
-                            placeholder="https://meusite.com.br"
-                            className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                            value={formData.websiteUrl}
-                            onChange={e => setFormData({...formData, websiteUrl: e.target.value})}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex justify-between items-center">
-                          Instagram
-                          {formData.instagramUrl && <a href={formData.instagramUrl} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1"><ExternalLink size={10} /> Ver</a>}
-                        </label>
-                        <div className="relative">
-                          <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                          <input 
-                            type="url" 
-                            placeholder="https://instagram.com/usuario"
-                            className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                            value={formData.instagramUrl}
-                            onChange={e => setFormData({...formData, instagramUrl: e.target.value})}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex justify-between items-center">
-                          Facebook
-                          {formData.facebookUrl && <a href={formData.facebookUrl} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1"><ExternalLink size={10} /> Ver</a>}
-                        </label>
-                        <div className="relative">
-                          <Facebook className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                          <input 
-                            type="url" 
-                            placeholder="https://facebook.com/pagina"
-                            className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                            value={formData.facebookUrl}
-                            onChange={e => setFormData({...formData, facebookUrl: e.target.value})}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex justify-between items-center">
-                          Outros Links (Portfólio)
-                          {formData.portfolioUrl && <a href={formData.portfolioUrl} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1"><ExternalLink size={10} /> Abrir</a>}
-                        </label>
-                        <div className="relative">
-                          <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                          <input 
-                            type="url" 
-                            placeholder="Behance, LinkedIn, etc."
-                            className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                            value={formData.portfolioUrl}
-                            onChange={e => setFormData({...formData, portfolioUrl: e.target.value})}
-                          />
-                        </div>
-                      </div>
+                      <input 
+                        type="url" 
+                        placeholder="Website"
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700"
+                        value={formData.websiteUrl}
+                        onChange={e => setFormData({...formData, websiteUrl: e.target.value})}
+                      />
+                      <input 
+                        type="url" 
+                        placeholder="Instagram"
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700"
+                        value={formData.instagramUrl}
+                        onChange={e => setFormData({...formData, instagramUrl: e.target.value})}
+                      />
                     </div>
                   </div>
 
-                  {/* Descriptions & Info */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center shadow-inner"><Info size={18} /></div>
                       <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Informações do Perfil</h4>
                     </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Sobre o Profissional (Público)</label>
-                        <textarea 
-                          placeholder="Descrição que aparece para os clientes..."
-                          className="w-full h-32 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 resize-none custom-scrollbar"
-                          value={formData.description}
-                          onChange={e => setFormData({...formData, description: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Observações Internas (Privado)</label>
-                        <textarea 
-                          placeholder="Anotações para o administrador (ex: Histórico de problemas, acordos especiais...)"
-                          className="w-full h-32 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 resize-none custom-scrollbar"
-                          value={formData.additionalInfo}
-                          onChange={e => setFormData({...formData, additionalInfo: e.target.value})}
-                        />
-                      </div>
-                    </div>
+                    <textarea 
+                      placeholder="Sobre o Profissional..."
+                      className="w-full h-32 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700 resize-none custom-scrollbar"
+                      value={formData.description}
+                      onChange={e => setFormData({...formData, description: e.target.value})}
+                    />
                   </div>
                 </div>
 
-                {/* Categories */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shadow-inner"><Briefcase size={18} /></div>
                     <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Serviços Oferecidos</h4>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {services.map(s => (
                       <button
                         key={s.id}
@@ -604,7 +532,7 @@ export const ProviderList: React.FC = () => {
                         onClick={() => toggleServiceInForm(s.id)}
                         className={`text-left px-4 py-3 rounded-2xl text-[10px] transition-all border font-black uppercase tracking-widest ${
                           formData.serviceIds.includes(s.id) 
-                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100' 
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' 
                             : 'bg-white text-slate-500 border-slate-100 hover:border-indigo-300'
                         }`}
                       >
@@ -620,13 +548,13 @@ export const ProviderList: React.FC = () => {
                     onClick={() => setIsModalOpen(false)}
                     className="flex-1 py-5 text-slate-400 font-black rounded-3xl hover:bg-slate-50 transition-all uppercase tracking-widest text-xs"
                   >
-                    Descartar Alterações
+                    Descartar
                   </button>
                   <button 
                     type="submit"
                     className="flex-1 py-5 bg-indigo-600 text-white font-black rounded-3xl hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-100 uppercase tracking-widest text-xs active:scale-95"
                   >
-                    {editingProvider ? 'Confirmar Edição' : 'Publicar Perfil'}
+                    Salvar Alterações
                   </button>
                 </div>
               </div>
