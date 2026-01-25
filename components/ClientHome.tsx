@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Zap, 
@@ -16,9 +16,13 @@ import {
   Trash2,
   Settings,
   UserPlus,
-  MapPin
+  MapPin,
+  MessageCircle,
+  User,
+  Star
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
+import { ProviderStatus } from '../types';
 
 const getServiceIcon = (name: string) => {
   const n = name.toLowerCase();
@@ -37,9 +41,23 @@ const getServiceIcon = (name: string) => {
 
 export const ClientHome: React.FC = () => {
   const services = dataService.getServices().filter(s => s.active);
+  const cities = dataService.getCities();
+  
+  // Pegar os últimos 4 prestadores ativos para exibir na home
+  const featuredProviders = useMemo(() => {
+    return dataService.getProviders()
+      .filter(p => p.status === ProviderStatus.ACTIVE)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 4);
+  }, []);
+
+  const openWhatsApp = (phone: string, name: string) => {
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil no Serviços Já e gostaria de um orçamento.`);
+    window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
+  };
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-700 pb-12">
+    <div className="space-y-16 animate-in fade-in duration-700 pb-12">
       {/* Hero */}
       <section className="text-center space-y-6 pt-6">
         <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-bold border border-indigo-100 shadow-sm">
@@ -50,9 +68,53 @@ export const ClientHome: React.FC = () => {
           <span className="text-indigo-600">Chamou, resolveu.</span>
         </h1>
         <p className="text-lg text-slate-500 max-w-2xl mx-auto px-4 leading-relaxed">
-          Encontre pintores, eletricistas, gesseiros e montadores confiáveis em Belo Horizonte, Contagem e Betim. Direto no seu WhatsApp.
+          Encontre os melhores profissionais em BH e Região. Atendimento direto via WhatsApp, sem intermediários.
         </p>
       </section>
+
+      {/* Featured Providers Section - AQUI É ONDE ELES APARECEM APÓS ATIVADOS */}
+      {featuredProviders.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+              <Star className="text-amber-500" fill="currentColor" size={20} />
+              Profissionais em Destaque
+            </h2>
+            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Recém Ativados</p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {featuredProviders.map(provider => (
+              <div key={provider.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all flex items-center justify-between group">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-400 font-black overflow-hidden border border-indigo-100">
+                    {provider.profileImage ? (
+                      <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={24} />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-900 leading-tight">{provider.name}</h4>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <MapPin size={12} className="text-indigo-600" />
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        {cities.find(c => c.id === provider.cityId)?.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => openWhatsApp(provider.phone, provider.name)}
+                  className="bg-emerald-500 text-white p-3 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95"
+                >
+                  <MessageCircle size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Categories Grid */}
       <section className="space-y-6">
@@ -121,24 +183,6 @@ export const ClientHome: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* Region Promo */}
-      <div className="bg-indigo-600 p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl shadow-indigo-200">
-        <div className="relative z-10 max-w-md">
-          <h3 className="text-2xl font-black mb-2">Grande BH e Região</h3>
-          <p className="text-indigo-100 font-medium text-sm leading-relaxed mb-6">
-            Presença consolidada em Belo Horizonte, Contagem e Betim. Os melhores prestadores da região metropolitana estão aqui.
-          </p>
-          <div className="flex gap-3">
-            <span className="bg-white/20 backdrop-blur-md border border-white/10 px-4 py-1 rounded-full text-xs font-bold">Belo Horizonte</span>
-            <span className="bg-white/20 backdrop-blur-md border border-white/10 px-4 py-1 rounded-full text-xs font-bold">Contagem</span>
-            <span className="bg-white/20 backdrop-blur-md border border-white/10 px-4 py-1 rounded-full text-xs font-bold">Betim</span>
-          </div>
-        </div>
-        <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4">
-          <MapPin size={240} />
-        </div>
-      </div>
     </div>
   );
 };
