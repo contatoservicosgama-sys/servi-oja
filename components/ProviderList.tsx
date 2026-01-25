@@ -27,7 +27,8 @@ import {
   Instagram,
   Facebook,
   Info,
-  Zap
+  Zap,
+  DollarSign
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { Provider, ProviderStatus, City, Service } from '../types';
@@ -76,21 +77,27 @@ export const ProviderList: React.FC = () => {
     });
   }, [providers, searchTerm, statusFilter, services]);
 
-  const handleQuickActivate = (id: string) => {
+  const handleManualActivate = (id: string) => {
     const provider = providers.find(p => p.id === id);
     if (provider) {
-      if (confirm(`Deseja ativar o plano de 30 dias para ${provider.name} agora?`)) {
-        const newDueDate = new Date();
+      if (confirm(`⚠️ ATIVAÇÃO MANUAL: Você confirma que o PIX de R$ 39,90 de "${provider.name}" já caiu na conta?`)) {
+        const now = new Date();
+        const currentDue = new Date(provider.dueDate);
+        const baseDate = currentDue > now ? currentDue : now;
+        
+        const newDueDate = new Date(baseDate);
         newDueDate.setDate(newDueDate.getDate() + 30);
+
         const updated = { ...provider, status: ProviderStatus.ACTIVE, dueDate: newDueDate.toISOString() };
         dataService.saveProvider(updated);
         setProviders(dataService.getProviders());
+        alert('Plano ativado com sucesso por 30 dias.');
       }
     }
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este prestador?')) {
+    if (confirm('Tem certeza que deseja excluir este prestador permanentemente?')) {
       dataService.deleteProvider(id);
       setProviders(dataService.getProviders());
     }
@@ -186,24 +193,16 @@ export const ProviderList: React.FC = () => {
   };
 
   const openWhatsApp = (phone: string, name: string) => {
-    const message = encodeURIComponent(`Olá ${name}, falo do suporte Serviços Já.`);
+    const message = encodeURIComponent(`Olá ${name}, falo da administração do Serviços Já.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
-  };
-
-  const viewPublicProfile = (provider: Provider) => {
-    if (provider.serviceIds.length > 0) {
-      window.open(`/#/busca/${provider.serviceIds[0]}`, '_blank');
-    } else {
-      alert('Este prestador não possui serviços vinculados.');
-    }
   };
 
   return (
     <div className="space-y-8 pb-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Gestão de Prestadores</h2>
-          <p className="text-slate-500 font-medium">Controle total sobre a visibilidade dos profissionais.</p>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Gestão de Prestadores</h2>
+          <p className="text-slate-500 font-medium">Ative profissionais somente após conferir o pagamento.</p>
         </div>
         <button 
           onClick={() => openModal()}
@@ -214,6 +213,7 @@ export const ProviderList: React.FC = () => {
         </button>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full group">
           <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
@@ -253,104 +253,91 @@ export const ProviderList: React.FC = () => {
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Atuação</th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Vencimento</th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Ações de Gestão</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Ação Manual</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {filteredProviders.length > 0 ? filteredProviders.map((provider) => (
-                <tr key={provider.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-lg group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors overflow-hidden border border-slate-200">
-                        {provider.profileImage ? (
-                          <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover" />
-                        ) : (
-                          provider.name.charAt(0)
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 leading-tight">{provider.name}</span>
-                        <div className="flex items-center gap-2 mt-1">
+              {filteredProviders.length > 0 ? filteredProviders.map((provider) => {
+                const isExpired = new Date(provider.dueDate) < new Date();
+                return (
+                  <tr key={provider.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-lg overflow-hidden border border-slate-200">
+                          {provider.profileImage ? (
+                            <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover" />
+                          ) : (
+                            provider.name.charAt(0)
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-slate-900 leading-tight">{provider.name}</span>
                           <button 
                             onClick={() => openWhatsApp(provider.phone, provider.name)}
-                            className="text-[10px] text-indigo-600 font-black flex items-center gap-1 hover:underline"
+                            className="text-[10px] text-indigo-600 font-black flex items-center gap-1 hover:underline mt-1"
                           >
                             <MessageCircle size={12} /> {provider.phone}
                           </button>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-black text-slate-700 flex items-center gap-1">
-                        <MapPin size={12} className="text-indigo-600" />
-                        {getCityName(provider.cityId)}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider line-clamp-1 max-w-[150px]">
-                        {getServiceNames(provider.serviceIds)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl w-fit">
-                      <Clock size={14} className="text-slate-400" />
-                      {new Date(provider.dueDate).toLocaleDateString('pt-BR')}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      provider.status === ProviderStatus.ACTIVE ? 'bg-emerald-100 text-emerald-700' :
-                      provider.status === ProviderStatus.PENDING ? 'bg-amber-100 text-amber-700 animate-pulse' :
-                      'bg-rose-100 text-rose-700'
-                    }`}>
-                      {provider.status}
-                    </span>
-                  </td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex justify-end gap-2 items-center">
-                      {provider.status !== ProviderStatus.ACTIVE && (
-                        <button 
-                          onClick={() => handleQuickActivate(provider.id)}
-                          className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-50 active:scale-95"
-                          title="Ativar Manualmente"
-                        >
-                          <Zap size={14} fill="currentColor" /> Ativar Agora
-                        </button>
-                      )}
-                      <div className="flex gap-1 ml-2">
-                        <button 
-                          onClick={() => viewPublicProfile(provider)}
-                          className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
-                          title="Ver Perfil Público"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button 
-                          onClick={() => openModal(provider)}
-                          className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
-                          title="Editar"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(provider.id)}
-                          className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
-                          title="Excluir"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-black text-slate-700 flex items-center gap-1">
+                          <MapPin size={12} className="text-indigo-600" />
+                          {getCityName(provider.cityId)}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate max-w-[150px]">
+                          {getServiceNames(provider.serviceIds)}
+                        </span>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              )) : (
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className={`flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl w-fit ${
+                        isExpired ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-slate-50 text-slate-600'
+                      }`}>
+                        <Clock size={14} className={isExpired ? 'text-rose-500' : 'text-slate-400'} />
+                        {new Date(provider.dueDate).toLocaleDateString('pt-BR')}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                        provider.status === ProviderStatus.ACTIVE ? 'bg-emerald-100 text-emerald-700' :
+                        provider.status === ProviderStatus.PENDING ? 'bg-amber-100 text-amber-700' :
+                        'bg-rose-100 text-rose-700'
+                      }`}>
+                        {provider.status}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex justify-end gap-2 items-center">
+                        {provider.status !== ProviderStatus.ACTIVE ? (
+                          <button 
+                            onClick={() => handleManualActivate(provider.id)}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 active:scale-95"
+                          >
+                            <DollarSign size={14} /> Confirmar PIX e Ativar
+                          </button>
+                        ) : (
+                           <button 
+                             onClick={() => handleManualActivate(provider.id)}
+                             className="text-[9px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest p-2"
+                           >
+                             Renovar +30d
+                           </button>
+                        )}
+                        <div className="flex gap-1 ml-2">
+                          <button onClick={() => openModal(provider)} className="p-2 text-slate-400 hover:text-indigo-600 transition-all"><Edit2 size={16} /></button>
+                          <button onClick={() => handleDelete(provider.id)} className="p-2 text-slate-400 hover:text-rose-600 transition-all"><Trash2 size={16} /></button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }) : (
                 <tr>
-                  <td colSpan={5} className="px-8 py-16 text-center">
-                    <div className="flex flex-col items-center gap-2 opacity-30">
-                       <Search size={48} />
-                       <p className="font-bold">Nenhum prestador encontrado</p>
-                    </div>
+                  <td colSpan={5} className="px-8 py-20 text-center opacity-30 font-black uppercase tracking-widest text-sm">
+                    Nenhum profissional encontrado.
                   </td>
                 </tr>
               )}
@@ -359,204 +346,48 @@ export const ProviderList: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Form permanece igual... */}
+      {/* Modal Reutilizado */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
           <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-300">
             <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                  <User size={32} />
-                </div>
-                <div>
-                  <h3 className="font-black text-2xl text-slate-900 leading-tight">
-                    {editingProvider ? 'Editar Profissional' : 'Novo Cadastro'}
-                  </h3>
-                  <p className="text-sm text-slate-500 font-medium">Preencha o perfil completo para visibilidade do cliente.</p>
-                </div>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="w-12 h-12 flex items-center justify-center bg-white text-slate-400 hover:text-slate-900 rounded-2xl transition-all shadow-sm border border-slate-100">
-                <X size={24} />
-              </button>
+               <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg"><User size={24} /></div>
+                 <h3 className="font-black text-2xl text-slate-900">{editingProvider ? 'Editar' : 'Novo'} Prestador</h3>
+               </div>
+               <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white text-slate-400 hover:text-slate-900 rounded-xl border border-slate-100 shadow-sm"><X size={20} /></button>
             </div>
-            
-            <form onSubmit={handleSave} className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
-              {/* Left Column - Image and Basics */}
-              <div className="lg:col-span-4 space-y-8">
-                <div className="space-y-4 flex flex-col items-center">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1 block w-full text-center">Foto de Perfil</label>
-                  <div className="relative group">
-                    <div className="w-44 h-44 rounded-[2.5rem] bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden transition-all group-hover:border-indigo-400 group-hover:bg-indigo-50 shadow-inner">
-                      {formData.profileImage ? (
-                        <img src={formData.profileImage} alt="Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <User size={64} className="text-slate-300" />
-                      )}
+            <form onSubmit={handleSave} className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="lg:col-span-4 space-y-6">
+                 <div className="flex flex-col items-center gap-4">
+                    <div className="w-40 h-40 rounded-[2.5rem] bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
+                       {formData.profileImage ? <img src={formData.profileImage} className="w-full h-full object-cover" /> : <Camera size={48} className="text-slate-300" />}
                     </div>
-                    <div className="absolute -bottom-2 -right-2 flex gap-2">
-                       {formData.profileImage && (
-                         <button 
-                           type="button"
-                           onClick={removeImage}
-                           className="bg-rose-500 text-white p-2.5 rounded-2xl shadow-lg hover:bg-rose-600 transition-colors"
-                           title="Remover foto"
-                         >
-                           <Trash2 size={16} />
-                         </button>
-                       )}
-                       <button 
-                         type="button"
-                         onClick={() => fileInputRef.current?.click()}
-                         className="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-colors"
-                         title="Trocar foto"
-                       >
-                         <Camera size={16} />
-                       </button>
-                    </div>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Nome Profissional</label>
-                    <input 
-                      required
-                      type="text" 
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                      value={formData.name}
-                      onChange={e => setFormData({...formData, name: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">WhatsApp</label>
-                    <input 
-                      required
-                      type="text" 
-                      placeholder="31999999999"
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                      value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Status do Perfil</label>
-                    <select 
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 appearance-none"
-                      value={formData.status}
-                      onChange={e => setFormData({...formData, status: e.target.value as ProviderStatus})}
-                    >
-                      <option value={ProviderStatus.PENDING}>Pendente</option>
-                      <option value={ProviderStatus.ACTIVE}>Ativo</option>
-                      <option value={ProviderStatus.BLOCKED}>Bloqueado</option>
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Alterar Foto</button>
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageChange} />
+                 </div>
+                 <div className="space-y-4">
+                    <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold" placeholder="Nome" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                    <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold" placeholder="WhatsApp" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                    <select className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold appearance-none" value={formData.cityId} onChange={e => setFormData({...formData, cityId: e.target.value})}>
+                       {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Cidade</label>
-                    <select 
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 appearance-none"
-                      value={formData.cityId}
-                      onChange={e => setFormData({...formData, cityId: e.target.value})}
-                    >
-                      {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Vencimento do Plano</label>
-                    <input 
-                      type="date" 
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                      value={formData.dueDate.split('T')[0]}
-                      onChange={e => setFormData({...formData, dueDate: new Date(e.target.value).toISOString()})}
-                    />
-                  </div>
-                </div>
+                 </div>
               </div>
-
-              {/* Right Column - Services and More */}
-              <div className="lg:col-span-8 space-y-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shadow-inner"><Globe size={18} /></div>
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Presença Digital</h4>
+              <div className="lg:col-span-8 space-y-6">
+                 <textarea className="w-full h-32 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold resize-none" placeholder="Descrição dos serviços..." value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                 <div className="space-y-4">
+                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-widest">Serviços</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                       {services.map(s => (
+                         <button key={s.id} type="button" onClick={() => toggleServiceInForm(s.id)} className={`px-3 py-2 text-[9px] font-black uppercase tracking-widest rounded-xl border transition-all ${formData.serviceIds.includes(s.id) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-500 border-slate-100'}`}>{s.name}</button>
+                       ))}
                     </div>
-                    <div className="space-y-4">
-                      <input 
-                        type="url" 
-                        placeholder="Website"
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700"
-                        value={formData.websiteUrl}
-                        onChange={e => setFormData({...formData, websiteUrl: e.target.value})}
-                      />
-                      <input 
-                        type="url" 
-                        placeholder="Instagram"
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700"
-                        value={formData.instagramUrl}
-                        onChange={e => setFormData({...formData, instagramUrl: e.target.value})}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center shadow-inner"><Info size={18} /></div>
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Informações do Perfil</h4>
-                    </div>
-                    <textarea 
-                      placeholder="Sobre o Profissional..."
-                      className="w-full h-32 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none font-bold text-slate-700 resize-none custom-scrollbar"
-                      value={formData.description}
-                      onChange={e => setFormData({...formData, description: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shadow-inner"><Briefcase size={18} /></div>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Serviços Oferecidos</h4>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {services.map(s => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => toggleServiceInForm(s.id)}
-                        className={`text-left px-4 py-3 rounded-2xl text-[10px] transition-all border font-black uppercase tracking-widest ${
-                          formData.serviceIds.includes(s.id) 
-                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' 
-                            : 'bg-white text-slate-500 border-slate-100 hover:border-indigo-300'
-                        }`}
-                      >
-                        {s.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-10 flex gap-4 border-t border-slate-50">
-                  <button 
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-5 text-slate-400 font-black rounded-3xl hover:bg-slate-50 transition-all uppercase tracking-widest text-xs"
-                  >
-                    Descartar
-                  </button>
-                  <button 
-                    type="submit"
-                    className="flex-1 py-5 bg-indigo-600 text-white font-black rounded-3xl hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-100 uppercase tracking-widest text-xs active:scale-95"
-                  >
-                    Salvar Alterações
-                  </button>
-                </div>
+                 </div>
+                 <div className="pt-6 flex gap-4">
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 text-slate-400 font-black uppercase tracking-widest text-xs">Cancelar</button>
+                    <button type="submit" className="flex-1 py-4 bg-indigo-600 text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-indigo-100">Salvar Prestador</button>
+                 </div>
               </div>
             </form>
           </div>

@@ -92,7 +92,8 @@ export const RegistrationFlow: React.FC = () => {
 
   const handleComplete = () => {
     const msg = encodeURIComponent(`Olá, sou o ${formData.name} e acabei de fazer o PIX de R$ 39,90 para ativar meu plano no Serviços Já.`);
-    window.open(`https://wa.me/5531999990000?text=${msg}`, '_blank');
+    // Atualizado para o número solicitado: 31 98427-9865
+    window.open(`https://wa.me/5531984279865?text=${msg}`, '_blank');
     setStep(3);
   };
 
