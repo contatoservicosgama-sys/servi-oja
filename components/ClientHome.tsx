@@ -19,7 +19,8 @@ import {
   MapPin,
   MessageCircle,
   User,
-  Star
+  Star,
+  Briefcase
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { ProviderStatus } from '../types';
@@ -40,7 +41,8 @@ const getServiceIcon = (name: string) => {
 };
 
 export const ClientHome: React.FC = () => {
-  const services = dataService.getServices().filter(s => s.active);
+  const allServices = dataService.getServices();
+  const services = allServices.filter(s => s.active);
   const cities = dataService.getCities();
   
   // Pegar os últimos 4 prestadores ativos para exibir na home
@@ -52,8 +54,15 @@ export const ClientHome: React.FC = () => {
   }, []);
 
   const openWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(`Olá ${name}, vi seu perfil no Serviços Já e gostaria de um orçamento.`);
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil de destaque no Serviços Já e gostaria de um orçamento.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
+  };
+
+  const getProviderServices = (ids: string[]) => {
+    return ids
+      .map(id => allServices.find(s => s.id === id)?.name)
+      .filter(Boolean)
+      .slice(0, 2); // Mostra apenas os 2 primeiros para não poluir
   };
 
   return (
@@ -72,7 +81,7 @@ export const ClientHome: React.FC = () => {
         </p>
       </section>
 
-      {/* Featured Providers Section - AQUI É ONDE ELES APARECEM APÓS ATIVADOS */}
+      {/* Featured Providers Section */}
       {featuredProviders.length > 0 && (
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
@@ -85,30 +94,38 @@ export const ClientHome: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {featuredProviders.map(provider => (
-              <div key={provider.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-400 font-black overflow-hidden border border-indigo-100">
+              <div key={provider.id} className="bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all flex items-center justify-between group">
+                <div className="flex items-center gap-4 overflow-hidden">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-400 font-black overflow-hidden border border-indigo-100 shrink-0">
                     {provider.profileImage ? (
                       <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover" />
                     ) : (
-                      <User size={24} />
+                      <User size={28} />
                     )}
                   </div>
-                  <div>
-                    <h4 className="font-black text-slate-900 leading-tight">{provider.name}</h4>
+                  <div className="min-w-0">
+                    <h4 className="font-black text-slate-900 leading-tight truncate">{provider.name}</h4>
                     <div className="flex items-center gap-1.5 mt-1">
                       <MapPin size={12} className="text-indigo-600" />
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                         {cities.find(c => c.id === provider.cityId)?.name}
                       </span>
                     </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                       {getProviderServices(provider.serviceIds).map((s, idx) => (
+                         <span key={idx} className="text-[8px] font-black bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                           {s}
+                         </span>
+                       ))}
+                    </div>
                   </div>
                 </div>
                 <button 
                   onClick={() => openWhatsApp(provider.phone, provider.name)}
-                  className="bg-emerald-500 text-white p-3 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95"
+                  className="bg-emerald-500 text-white p-4 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95 shrink-0 ml-4"
+                  title="Conversar Agora"
                 >
-                  <MessageCircle size={20} />
+                  <MessageCircle size={24} />
                 </button>
               </div>
             ))}
