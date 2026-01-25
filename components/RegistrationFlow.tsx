@@ -353,11 +353,11 @@ export const RegistrationFlow: React.FC = () => {
               </h4>
               <div className="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-slate-200 text-center space-y-4">
                 <div>
-                   <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em] mb-2">Chave PIX (E-mail)</p>
-                   <p className="text-xl sm:text-2xl font-mono font-black text-slate-900 break-all px-2">pagamento@servicosja.com.br</p>
+                   <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em] mb-2">Chave PIX (CNPJ)</p>
+                   <p className="text-xl sm:text-2xl font-mono font-black text-slate-900 break-all px-2">48.493.836/0001-00</p>
                 </div>
                 <button 
-                  onClick={() => { navigator.clipboard.writeText('pagamento@servicosja.com.br'); alert('E-mail copiado para o seu teclado!'); }}
+                  onClick={() => { navigator.clipboard.writeText('48.493.836/0001-00'); alert('CNPJ copiado para o seu teclado!'); }}
                   className="bg-white px-8 py-3 rounded-2xl shadow-md text-indigo-600 text-xs font-black hover:shadow-xl transition-all flex items-center justify-center gap-2 mx-auto border border-slate-100 uppercase tracking-widest"
                 >
                   <ClipboardCheck size={18} /> Copiar Chave

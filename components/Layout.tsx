@@ -16,7 +16,7 @@ import {
   ExternalLink,
   Globe
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,8 +32,17 @@ const navItems = [
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const handleLogout = () => {
+    if (confirm('Deseja encerrar sua sessão administrativa?')) {
+      sessionStorage.removeItem('admin_auth');
+      navigate('/');
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
@@ -109,7 +118,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               </div>
             </div>
           </div>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm"
+          >
             <LogOut size={18} />
             <span>Encerrar Sessão</span>
           </button>

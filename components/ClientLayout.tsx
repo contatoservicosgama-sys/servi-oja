@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Wrench, UserPlus, Home as HomeIcon, ShieldCheck } from 'lucide-react';
+import { Wrench, UserPlus, Home as HomeIcon, ShieldCheck, LogIn } from 'lucide-react';
 
 export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -23,11 +23,16 @@ export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children
           
           <nav className="hidden sm:flex items-center gap-6">
             <Link to="/" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Início</Link>
-            <Link to="/cadastro" className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full hover:bg-indigo-100 transition-colors">Seja um Parceiro</Link>
+            <Link to="/cadastro" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors">Seja um Parceiro</Link>
+            <div className="w-px h-4 bg-slate-200"></div>
+            <Link to="/admin" className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full hover:bg-indigo-100 transition-all active:scale-95">
+              <LogIn size={16} />
+              Painel Admin
+            </Link>
           </nav>
 
-          <Link to="/cadastro" className="sm:hidden text-indigo-600">
-            <UserPlus size={24} />
+          <Link to="/admin" className="sm:hidden text-slate-400 p-2">
+            <ShieldCheck size={22} />
           </Link>
         </div>
       </header>
@@ -47,7 +52,7 @@ export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children
           <UserPlus size={20} />
           <span className="text-[10px] font-bold">Cadastrar</span>
         </Link>
-        <Link to="/admin" className="flex flex-col items-center gap-1 text-slate-400">
+        <Link to="/admin" className={`flex flex-col items-center gap-1 ${location.pathname.startsWith('/admin') ? 'text-indigo-600' : 'text-slate-400'}`}>
           <ShieldCheck size={20} />
           <span className="text-[10px] font-bold">Admin</span>
         </Link>
@@ -56,9 +61,11 @@ export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children
       {/* Footer */}
       <footer className="bg-white border-t border-slate-100 py-10 pb-24 sm:pb-10 mt-auto">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-sm text-slate-400">© 2024 Serviços Já. Pequenos reparos, solução na hora.</p>
+          <p className="text-sm text-slate-400 font-medium">© 2024 Serviços Já. Pequenos reparos, solução na hora.</p>
           <div className="mt-4 flex justify-center gap-4">
-             <Link to="/admin" className="text-xs text-slate-300 hover:underline">Acesso Restrito</Link>
+             <Link to="/admin" className="text-xs text-slate-400 font-bold hover:text-indigo-600 hover:underline flex items-center gap-1">
+               <ShieldCheck size={12} /> Acesso Administrativo
+             </Link>
           </div>
         </div>
       </footer>
