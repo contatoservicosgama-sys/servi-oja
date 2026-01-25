@@ -26,7 +26,8 @@ import {
   Globe,
   Instagram,
   Facebook,
-  Info
+  Info,
+  Zap
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { Provider, ProviderStatus, City, Service } from '../types';
@@ -75,10 +76,12 @@ export const ProviderList: React.FC = () => {
     });
   }, [providers, searchTerm, statusFilter, services]);
 
-  const handleStatusChange = (id: string, newStatus: ProviderStatus) => {
+  const handleQuickActivate = (id: string) => {
     const provider = providers.find(p => p.id === id);
     if (provider) {
-      const updated = { ...provider, status: newStatus };
+      const newDueDate = new Date();
+      newDueDate.setDate(newDueDate.getDate() + 30);
+      const updated = { ...provider, status: ProviderStatus.ACTIVE, dueDate: newDueDate.toISOString() };
       dataService.saveProvider(updated);
       setProviders(dataService.getProviders());
     }
@@ -296,7 +299,7 @@ export const ProviderList: React.FC = () => {
                   <td className="px-8 py-6">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                       provider.status === ProviderStatus.ACTIVE ? 'bg-emerald-100 text-emerald-700' :
-                      provider.status === ProviderStatus.PENDING ? 'bg-amber-100 text-amber-700' :
+                      provider.status === ProviderStatus.PENDING ? 'bg-amber-100 text-amber-700 animate-pulse' :
                       'bg-rose-100 text-rose-700'
                     }`}>
                       {provider.status}
@@ -304,6 +307,15 @@ export const ProviderList: React.FC = () => {
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2">
+                      {provider.status !== ProviderStatus.ACTIVE && (
+                        <button 
+                          onClick={() => handleQuickActivate(provider.id)}
+                          className="p-2.5 text-emerald-500 hover:text-white hover:bg-emerald-500 rounded-xl transition-all shadow-sm border border-emerald-100"
+                          title="Ativar Manualmente"
+                        >
+                          <Zap size={18} fill="currentColor" />
+                        </button>
+                      )}
                       <button 
                         onClick={() => viewPublicProfile(provider)}
                         className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
@@ -433,17 +445,16 @@ export const ProviderList: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">E-mail</label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                      <input 
-                        type="email" 
-                        placeholder="seu@email.com"
-                        className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700"
-                        value={formData.email}
-                        onChange={e => setFormData({...formData, email: e.target.value})}
-                      />
-                    </div>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Status do Perfil</label>
+                    <select 
+                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 appearance-none"
+                      value={formData.status}
+                      onChange={e => setFormData({...formData, status: e.target.value as ProviderStatus})}
+                    >
+                      <option value={ProviderStatus.PENDING}>Pendente</option>
+                      <option value={ProviderStatus.ACTIVE}>Ativo</option>
+                      <option value={ProviderStatus.BLOCKED}>Bloqueado</option>
+                    </select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Cidade</label>
