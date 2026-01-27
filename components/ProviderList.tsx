@@ -44,25 +44,6 @@ export const ProviderList: React.FC = () => {
   const cities = dataService.getCities();
   const services = dataService.getServices();
 
-  // Form State
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    document: '',
-    cityId: '',
-    serviceIds: [] as string[],
-    status: ProviderStatus.PENDING,
-    dueDate: new Date(Date.now() + 86400000 * 30).toISOString(),
-    profileImage: '',
-    description: '',
-    portfolioUrl: '',
-    websiteUrl: '',
-    instagramUrl: '',
-    facebookUrl: '',
-    additionalInfo: ''
-  });
-
   const filteredProviders = useMemo(() => {
     const lowerSearch = searchTerm.toLowerCase();
     return providers.filter(p => {
@@ -123,10 +104,23 @@ export const ProviderList: React.FC = () => {
     }
   };
 
-  const removeImage = () => {
-    setFormData(prev => ({ ...prev, profileImage: '' }));
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    document: '',
+    cityId: '',
+    serviceIds: [] as string[],
+    status: ProviderStatus.PENDING,
+    dueDate: new Date(Date.now() + 86400000 * 30).toISOString(),
+    profileImage: '',
+    description: '',
+    portfolioUrl: '',
+    websiteUrl: '',
+    instagramUrl: '',
+    facebookUrl: '',
+    additionalInfo: ''
+  });
 
   const openModal = (provider?: Provider) => {
     if (provider) {
@@ -198,7 +192,7 @@ export const ProviderList: React.FC = () => {
   };
 
   const openWhatsApp = (phone: string, name: string) => {
-    const message = encodeURIComponent(`Olá ${name}, falo da administração do Serviços Já.`);
+    const message = encodeURIComponent(`Olá ${name}, falo da administração da plataforma Sua Mão de Obra.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
   };
 
@@ -211,14 +205,13 @@ export const ProviderList: React.FC = () => {
         </div>
         <button 
           onClick={() => openModal()}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95"
+          className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95 border-none cursor-pointer"
         >
           <Plus size={20} />
           <span>Novo Prestador</span>
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full group">
           <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
@@ -237,9 +230,9 @@ export const ProviderList: React.FC = () => {
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex-1 lg:flex-none whitespace-nowrap ${
+              className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex-1 lg:flex-none whitespace-nowrap border-none cursor-pointer ${
                 statusFilter === status 
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' 
+                  ? 'bg-indigo-600 text-white shadow-lg' 
                   : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-50'
               }`}
             >
@@ -279,7 +272,7 @@ export const ProviderList: React.FC = () => {
                           <span className="font-bold text-slate-900 leading-tight">{provider.name}</span>
                           <button 
                             onClick={() => openWhatsApp(provider.phone, provider.name)}
-                            className="text-[10px] text-indigo-600 font-black flex items-center gap-1 hover:underline mt-1"
+                            className="text-[10px] text-indigo-600 font-black flex items-center gap-1 hover:underline mt-1 bg-transparent border-none cursor-pointer p-0"
                           >
                             <MessageCircle size={12} /> {provider.phone}
                           </button>
@@ -319,21 +312,21 @@ export const ProviderList: React.FC = () => {
                         {provider.status !== ProviderStatus.ACTIVE ? (
                           <button 
                             onClick={() => handleManualActivate(provider.id)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 active:scale-95"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 active:scale-95 border-none cursor-pointer"
                           >
                             <DollarSign size={14} /> Confirmar PIX e Ativar
                           </button>
                         ) : (
                            <button 
                              onClick={() => handleManualActivate(provider.id)}
-                             className="text-[9px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest p-2"
+                             className="text-[9px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest p-2 bg-transparent border-none cursor-pointer"
                            >
                              Renovar +30d
                            </button>
                         )}
                         <div className="flex gap-1 ml-2">
-                          <button onClick={() => openModal(provider)} className="p-2 text-slate-400 hover:text-indigo-600 transition-all"><Edit2 size={16} /></button>
-                          <button onClick={() => handleDelete(provider.id)} className="p-2 text-slate-400 hover:text-rose-600 transition-all"><Trash2 size={16} /></button>
+                          <button onClick={() => openModal(provider)} className="p-2 text-slate-400 hover:text-indigo-600 transition-all bg-transparent border-none cursor-pointer"><Edit2 size={16} /></button>
+                          <button onClick={() => handleDelete(provider.id)} className="p-2 text-slate-400 hover:text-rose-600 transition-all bg-transparent border-none cursor-pointer"><Trash2 size={16} /></button>
                         </div>
                       </div>
                     </td>
@@ -351,7 +344,6 @@ export const ProviderList: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Reutilizado */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
           <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-300">
@@ -360,7 +352,7 @@ export const ProviderList: React.FC = () => {
                  <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg"><User size={24} /></div>
                  <h3 className="font-black text-2xl text-slate-900">{editingProvider ? 'Editar' : 'Novo'} Prestador</h3>
                </div>
-               <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white text-slate-400 hover:text-slate-900 rounded-xl border border-slate-100 shadow-sm"><X size={20} /></button>
+               <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white text-slate-400 hover:text-slate-900 rounded-xl border border-slate-100 shadow-sm border-none cursor-pointer"><X size={20} /></button>
             </div>
             <form onSubmit={handleSave} className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
               <div className="lg:col-span-4 space-y-6">
@@ -368,13 +360,13 @@ export const ProviderList: React.FC = () => {
                     <div className="w-40 h-40 rounded-[2.5rem] bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
                        {formData.profileImage ? <img src={formData.profileImage} className="w-full h-full object-cover" /> : <Camera size={48} className="text-slate-300" />}
                     </div>
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Alterar Foto</button>
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-transparent border-none cursor-pointer">Alterar Foto</button>
                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageChange} />
                  </div>
                  <div className="space-y-4">
                     <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold" placeholder="Nome" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                     <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold" placeholder="WhatsApp" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                    <select className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold appearance-none" value={formData.cityId} onChange={e => setFormData({...formData, cityId: e.target.value})}>
+                    <select className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold appearance-none cursor-pointer" value={formData.cityId} onChange={e => setFormData({...formData, cityId: e.target.value})}>
                        {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                  </div>
@@ -385,13 +377,13 @@ export const ProviderList: React.FC = () => {
                     <h4 className="text-xs font-black uppercase text-slate-400 tracking-widest">Serviços</h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                        {services.map(s => (
-                         <button key={s.id} type="button" onClick={() => toggleServiceInForm(s.id)} className={`px-3 py-2 text-[9px] font-black uppercase tracking-widest rounded-xl border transition-all ${formData.serviceIds.includes(s.id) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-500 border-slate-100'}`}>{s.name}</button>
+                         <button key={s.id} type="button" onClick={() => toggleServiceInForm(s.id)} className={`px-3 py-2 text-[9px] font-black uppercase tracking-widest rounded-xl border transition-all cursor-pointer ${formData.serviceIds.includes(s.id) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-500 border-slate-100'}`}>{s.name}</button>
                        ))}
                     </div>
                  </div>
                  <div className="pt-6 flex gap-4">
-                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 text-slate-400 font-black uppercase tracking-widest text-xs">Cancelar</button>
-                    <button type="submit" className="flex-1 py-4 bg-indigo-600 text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-indigo-100">Salvar Prestador</button>
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 text-slate-400 font-black uppercase tracking-widest text-xs bg-transparent border-none cursor-pointer">Cancelar</button>
+                    <button type="submit" className="flex-1 py-4 bg-indigo-600 text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-indigo-100 border-none cursor-pointer">Salvar Prestador</button>
                  </div>
               </div>
             </form>

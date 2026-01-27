@@ -27,7 +27,7 @@ export const CityManagement: React.FC = () => {
     <div className="max-w-4xl space-y-8">
       <header>
         <h2 className="text-2xl font-bold text-slate-900">Cidades e Regiões</h2>
-        <p className="text-slate-500">Gerencie onde o Serviços Já está operando.</p>
+        <p className="text-slate-500">Gerencie onde a plataforma Sua Mão de Obra está operando.</p>
       </header>
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -35,11 +35,11 @@ export const CityManagement: React.FC = () => {
           <input 
             type="text" 
             placeholder="Nome da cidade (ex: Betim)"
-            className="flex-1 px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
             value={newCityName}
             onChange={(e) => setNewCityName(e.target.value)}
           />
-          <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+          <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2 border-none cursor-pointer">
             <Plus size={18} /> Ativar Cidade
           </button>
         </form>
@@ -56,11 +56,11 @@ export const CityManagement: React.FC = () => {
               <div className="flex gap-2">
                 <button 
                   onClick={() => toggleCity(city)}
-                  className={`p-2 rounded-lg ${city.active ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 bg-slate-100'}`}
+                  className={`p-2 rounded-lg border-none cursor-pointer transition-colors ${city.active ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 bg-slate-100'}`}
                 >
                   <Power size={18} />
                 </button>
-                <button className="p-2 text-slate-400 hover:text-rose-600">
+                <button className="p-2 text-slate-400 hover:text-rose-600 bg-transparent border-none cursor-pointer transition-colors">
                   <Trash2 size={18} />
                 </button>
               </div>

@@ -16,13 +16,14 @@ import {
   Mail,
   FileText
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { dataService } from '../services/dataService';
 import { ProviderStatus } from '../types';
 
 export const RegistrationFlow: React.FC = () => {
   const [step, setStep] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   const cities = dataService.getCities();
   const services = dataService.getServices().filter(s => s.active);
 
@@ -91,7 +92,7 @@ export const RegistrationFlow: React.FC = () => {
   };
 
   const handleComplete = () => {
-    const msg = encodeURIComponent(`Olá, sou o ${formData.name} e acabei de fazer o PIX de R$ 39,90 para ativar meu plano no Pronto!.`);
+    const msg = encodeURIComponent(`Olá, sou o ${formData.name} e acabei de fazer o PIX de R$ 39,90 para ativar meu plano na plataforma Sua Mão de Obra.`);
     window.open(`https://wa.me/5531984279865?text=${msg}`, '_blank');
     setStep(3);
   };
@@ -105,7 +106,7 @@ export const RegistrationFlow: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-3xl font-black text-slate-900">Solicitação Enviada!</h2>
           <p className="text-slate-500 font-medium leading-relaxed">
-            Recebemos seus dados. Assim que confirmarmos o seu PIX no WhatsApp, seu anúncio ficará visível para todos os clientes da região na plataforma Pronto!.
+            Recebemos seus dados. Assim que confirmarmos o seu PIX no WhatsApp, seu anúncio ficará visível para todos os clientes da região na plataforma Sua Mão de Obra.
           </p>
         </div>
         <div className="pt-6">
@@ -119,7 +120,6 @@ export const RegistrationFlow: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20 animate-in slide-in-from-bottom-4 duration-500">
-      {/* Steps Indicator */}
       <div className="flex items-center justify-center gap-4">
         <div className={`flex items-center gap-3 ${step >= 1 ? 'text-indigo-600' : 'text-slate-300'}`}>
           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm border-2 transition-all ${step >= 1 ? 'border-indigo-600 bg-indigo-50 shadow-lg shadow-indigo-100' : 'border-slate-200 bg-white'}`}>1</div>
@@ -138,11 +138,10 @@ export const RegistrationFlow: React.FC = () => {
         <div className="bg-white p-6 sm:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl space-y-10">
           <div className="text-center space-y-3">
             <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Comece a Receber Clientes</h2>
-            <p className="text-slate-500 font-medium">Crie seu perfil profissional no Pronto! e apareça para quem precisa dos seus serviços hoje.</p>
+            <p className="text-slate-500 font-medium">Crie seu perfil profissional no Sua Mão de Obra e apareça para quem precisa dos seus serviços hoje.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* Left Column */}
             <div className="lg:col-span-5 space-y-8">
               <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -196,7 +195,6 @@ export const RegistrationFlow: React.FC = () => {
               </section>
             </div>
 
-            {/* Right Column */}
             <div className="lg:col-span-7 space-y-10">
               <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -221,8 +219,9 @@ export const RegistrationFlow: React.FC = () => {
                     {services.map(s => (
                       <button
                         key={s.id}
+                        type="button"
                         onClick={() => toggleService(s.id)}
-                        className={`px-4 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all text-left flex items-center justify-between group ${
+                        className={`px-4 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all text-left flex items-center justify-between group cursor-pointer ${
                           formData.serviceIds.includes(s.id)
                             ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100'
                             : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-slate-50'
@@ -251,7 +250,7 @@ export const RegistrationFlow: React.FC = () => {
         <div className="bg-white p-6 sm:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="text-center space-y-3">
             <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Quase tudo pronto!</h2>
-            <p className="text-slate-500 font-medium">Ative seu plano no Pronto! para começar a receber contatos hoje mesmo.</p>
+            <p className="text-slate-500 font-medium">Ative seu plano no Sua Mão de Obra para começar a receber contatos hoje mesmo.</p>
           </div>
 
           <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-8 rounded-[2rem] text-white shadow-2xl shadow-indigo-200 space-y-6 relative overflow-hidden">

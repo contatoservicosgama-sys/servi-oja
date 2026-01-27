@@ -9,11 +9,11 @@ import {
 } from '../constants';
 
 const STORAGE_KEYS = {
-  PROVIDERS: 'servicos_ja_providers',
-  PAYMENTS: 'servicos_ja_payments',
-  SERVICES: 'servicos_ja_services',
-  CITIES: 'servicos_ja_cities',
-  TEMPLATES: 'servicos_ja_templates'
+  PROVIDERS: 'sua_mao_de_obra_providers',
+  PAYMENTS: 'sua_mao_de_obra_payments',
+  SERVICES: 'sua_mao_de_obra_services',
+  CITIES: 'sua_mao_de_obra_cities',
+  TEMPLATES: 'sua_mao_de_obra_templates'
 };
 
 class DataService {

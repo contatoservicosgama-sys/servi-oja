@@ -39,7 +39,7 @@ export const ClientProviderList: React.FC = () => {
   const currentService = services.find(s => s.id === serviceId);
 
   const openWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(`Olá ${name}, vi seu perfil no Pronto! e preciso de um orçamento para ${currentService?.name}.`);
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil na plataforma Sua Mão de Obra e preciso de um orçamento para ${currentService?.name}.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
@@ -49,7 +49,6 @@ export const ClientProviderList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-4">
         <Link to="/" className="p-2 bg-white border border-slate-100 rounded-xl text-slate-600 hover:text-indigo-600 shadow-sm">
           <ChevronLeft size={24} />
@@ -60,14 +59,13 @@ export const ClientProviderList: React.FC = () => {
         </div>
       </div>
 
-      {/* City Filter */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         <button 
           onClick={() => setSelectedCity('all')}
-          className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap border transition-all shadow-sm ${
+          className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap border transition-all shadow-sm cursor-pointer border-none ${
             selectedCity === 'all' 
-              ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' 
-              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
+              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
           }`}
         >
           Todas as cidades
@@ -76,10 +74,10 @@ export const ClientProviderList: React.FC = () => {
           <button 
             key={city.id}
             onClick={() => setSelectedCity(city.id)}
-            className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap border transition-all shadow-sm ${
+            className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap border transition-all shadow-sm cursor-pointer border-none ${
               selectedCity === city.id
-                ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' 
-                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
             }`}
           >
             {city.name}
@@ -87,7 +85,6 @@ export const ClientProviderList: React.FC = () => {
         ))}
       </div>
 
-      {/* List */}
       <div className="space-y-6">
         {filteredProviders.length > 0 ? filteredProviders.map(provider => (
           <div key={provider.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50/50 transition-all flex flex-col gap-6">
@@ -122,7 +119,7 @@ export const ClientProviderList: React.FC = () => {
                 {provider.portfolioUrl && (
                   <button 
                     onClick={() => window.open(provider.portfolioUrl, '_blank')}
-                    className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 px-6 py-3.5 rounded-2xl font-black hover:bg-slate-100 transition-all border border-slate-100 text-xs uppercase tracking-widest"
+                    className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 px-6 py-3.5 rounded-2xl font-black hover:bg-slate-100 transition-all border border-slate-100 text-xs uppercase tracking-widest cursor-pointer border-none"
                   >
                     <ImageIcon size={18} />
                     Portfólio
@@ -130,7 +127,7 @@ export const ClientProviderList: React.FC = () => {
                 )}
                 <button 
                   onClick={() => openWhatsApp(provider.phone, provider.name)}
-                  className="flex items-center justify-center gap-2 bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black hover:bg-emerald-600 transition-all shadow-xl shadow-emerald-100 uppercase tracking-widest text-xs"
+                  className="flex items-center justify-center gap-2 bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black hover:bg-emerald-600 transition-all shadow-xl shadow-emerald-100 uppercase tracking-widest text-xs border-none cursor-pointer"
                 >
                   <MessageCircle size={18} />
                   Orçamento Grátis
@@ -138,12 +135,11 @@ export const ClientProviderList: React.FC = () => {
               </div>
             </div>
 
-            {/* Expandable Description */}
             {provider.description && (
               <div className="border-t border-slate-50 pt-4">
                 <button 
                   onClick={() => toggleDescription(provider.id)}
-                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-colors mb-2"
+                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-colors mb-2 bg-transparent border-none cursor-pointer"
                 >
                   Sobre o Profissional
                   {expandedDescriptions[provider.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -174,7 +170,7 @@ export const ClientProviderList: React.FC = () => {
         <div className="relative z-10">
           <h4 className="font-black text-xl mb-2">Compromisso com Qualidade</h4>
           <p className="text-sm text-indigo-100 leading-relaxed font-medium max-w-lg">
-            O Pronto! conecta você aos melhores profissionais. Combine valores, prazos e detalhes diretamente no WhatsApp.
+            A plataforma Sua Mão de Obra conecta você aos melhores profissionais. Combine valores, prazos e detalhes diretamente no WhatsApp.
           </p>
         </div>
         <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>

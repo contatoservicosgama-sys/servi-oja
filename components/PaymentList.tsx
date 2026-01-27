@@ -40,7 +40,7 @@ export const PaymentList: React.FC = () => {
           dueDate: newDueDate.toISOString(),
           activatedAt: now.toISOString()
         });
-        alert(`Pagamento confirmado! O perfil de ${provider.name} foi ativado até ${newDueDate.toLocaleDateString('pt-BR')}.`);
+        alert(`Pagamento confirmado! O perfil de ${provider.name} foi ativado na plataforma Sua Mão de Obra até ${newDueDate.toLocaleDateString('pt-BR')}.`);
       }
     }
 
@@ -51,7 +51,7 @@ export const PaymentList: React.FC = () => {
     const templates = dataService.getTemplates();
     const type = isRejection ? 'Pagamento Rejeitado' : 'Pagamento Aprovado';
     const tpl = templates.find(t => t.type === type);
-    const message = encodeURIComponent(tpl?.content || `Olá ${name}, sobre seu pagamento no Serviços Já...`);
+    const message = encodeURIComponent(tpl?.content || `Olá ${name}, sobre seu pagamento na plataforma Sua Mão de Obra...`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
   };
 
@@ -86,7 +86,7 @@ export const PaymentList: React.FC = () => {
                         {provider && (
                           <button 
                             onClick={() => openWhatsApp(provider.phone, provider.name)}
-                            className="flex items-center gap-1.5 text-xs text-indigo-600 font-black hover:underline mt-1"
+                            className="flex items-center gap-1.5 text-xs text-indigo-600 font-black hover:underline mt-1 bg-transparent border-none cursor-pointer p-0"
                           >
                             <MessageCircle size={14} /> {provider.phone}
                           </button>
@@ -116,7 +116,7 @@ export const PaymentList: React.FC = () => {
                           <>
                             <button 
                               onClick={() => updatePaymentStatus(payment, PaymentStatus.APPROVED)}
-                              className="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-2 shadow-lg shadow-emerald-100 active:scale-95"
+                              className="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-2 shadow-lg shadow-emerald-100 active:scale-95 border-none cursor-pointer"
                             >
                               <CheckCircle2 size={16} /> Aprovar e Ativar
                             </button>
@@ -125,7 +125,7 @@ export const PaymentList: React.FC = () => {
                                 updatePaymentStatus(payment, PaymentStatus.REJECTED);
                                 if (provider) openWhatsApp(provider.phone, provider.name, true);
                               }}
-                              className="bg-white text-rose-500 border border-rose-100 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center gap-2 active:scale-95"
+                              className="bg-white text-rose-500 border border-rose-100 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center gap-2 active:scale-95 border-none cursor-pointer"
                             >
                               <XCircle size={16} /> Rejeitar
                             </button>
@@ -161,7 +161,7 @@ export const PaymentList: React.FC = () => {
         <div>
           <h4 className="font-black text-xl mb-1">Dica de Ativação</h4>
           <p className="text-sm text-indigo-100 leading-relaxed font-medium">
-            Sempre confira o valor no seu banco antes de clicar em <strong>Aprovar</strong>. Ao confirmar, o sistema libera o acesso do profissional por 30 dias e envia uma notificação automática (opcional) no WhatsApp.
+            Sempre confira o valor no seu banco antes de clicar em <strong>Aprovar</strong>. Ao confirmar, o sistema libera o acesso do profissional por 30 dias e envia uma notificação automática na plataforma Sua Mão de Obra.
           </p>
         </div>
       </div>
