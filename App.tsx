@@ -100,10 +100,17 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// Fix: Define the App component which was missing
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
+        {/* Client Side Routes */}
+        <Route path="/" element={<ClientLayout><ClientHome /></ClientLayout>} />
+        <Route path="/busca/:serviceId" element={<ClientLayout><ClientProviderList /></ClientLayout>} />
+        <Route path="/cadastro" element={<ClientLayout><RegistrationFlow /></ClientLayout>} />
+
+        {/* Admin Side Routes */}
         <Route path="/admin" element={<AdminGuard><AdminLayout><Dashboard /></AdminLayout></AdminGuard>} />
         <Route path="/admin/prestadores" element={<AdminGuard><AdminLayout><ProviderList /></AdminLayout></AdminGuard>} />
         <Route path="/admin/pagamentos" element={<AdminGuard><AdminLayout><PaymentList /></AdminLayout></AdminGuard>} />
@@ -111,11 +118,7 @@ const App: React.FC = () => {
         <Route path="/admin/servicos" element={<AdminGuard><AdminLayout><ServiceManagement /></AdminLayout></AdminGuard>} />
         <Route path="/admin/cidades" element={<AdminGuard><AdminLayout><CityManagement /></AdminLayout></AdminGuard>} />
         <Route path="/admin/relatorios" element={<AdminGuard><AdminLayout><Reports /></AdminLayout></AdminGuard>} />
-        <Route path="/admin/mensagens" element={<AdminGuard><AdminLayout><MessageTemplates /></AdminGuard>} />
-        <Route path="/" element={<ClientLayout><ClientHome /></ClientLayout>} />
-        <Route path="/busca/:serviceId" element={<ClientLayout><ClientProviderList /></ClientLayout>} />
-        <Route path="/cadastro" element={<ClientLayout><RegistrationFlow /></ClientLayout>} />
-        <Route path="*" element={<ClientLayout><ClientHome /></ClientLayout>} />
+        <Route path="/admin/mensagens" element={<AdminGuard><AdminLayout><MessageTemplates /></AdminLayout></AdminGuard>} />
       </Routes>
     </Router>
   );

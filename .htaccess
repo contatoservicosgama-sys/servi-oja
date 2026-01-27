@@ -1,0 +1,24 @@
+
+# 1. Configurar MIME types corretos para scripts
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType application/javascript .mjs
+  AddType application/javascript .jsx
+  AddType application/javascript .ts
+  AddType application/javascript .tsx
+</IfModule>
+
+# 2. Forçar o tipo de conteúdo para scripts módulos
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# 3. Roteamento SPA: Redireciona todas as rotas para o index.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
