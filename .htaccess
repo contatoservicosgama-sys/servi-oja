@@ -1,5 +1,5 @@
 
-# 1. Configurar MIME types corretos para scripts
+# 1. Configurar MIME types corretos para arquivos TSX/TS
 <IfModule mod_mime.c>
   AddType application/javascript .js
   AddType application/javascript .mjs
@@ -8,12 +8,15 @@
   AddType application/javascript .tsx
 </IfModule>
 
-# 2. Forçar o tipo de conteúdo para scripts módulos
+# 2. Impedir que o servidor envie Content-Type errado e forçar JS
 <IfModule mod_headers.c>
+  <FilesMatch "\.(ts|tsx)$">
+    Header set Content-Type "application/javascript"
+  </FilesMatch>
   Header set X-Content-Type-Options "nosniff"
 </IfModule>
 
-# 3. Roteamento SPA: Redireciona todas as rotas para o index.html
+# 3. Roteamento SPA (Single Page Application)
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
