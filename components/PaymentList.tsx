@@ -9,7 +9,6 @@ import {
   ExternalLink,
   MessageCircle,
   Smartphone,
-  // Fix: added missing CreditCard icon import
   CreditCard
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
@@ -38,7 +37,8 @@ export const PaymentList: React.FC = () => {
         dataService.saveProvider({
           ...provider,
           status: ProviderStatus.ACTIVE,
-          dueDate: newDueDate.toISOString()
+          dueDate: newDueDate.toISOString(),
+          activatedAt: now.toISOString()
         });
         alert(`Pagamento confirmado! O perfil de ${provider.name} foi ativado até ${newDueDate.toLocaleDateString('pt-BR')}.`);
       }

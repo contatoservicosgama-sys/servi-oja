@@ -88,7 +88,12 @@ export const ProviderList: React.FC = () => {
         const newDueDate = new Date(baseDate);
         newDueDate.setDate(newDueDate.getDate() + 30);
 
-        const updated = { ...provider, status: ProviderStatus.ACTIVE, dueDate: newDueDate.toISOString() };
+        const updated = { 
+          ...provider, 
+          status: ProviderStatus.ACTIVE, 
+          dueDate: newDueDate.toISOString(),
+          activatedAt: now.toISOString() 
+        };
         dataService.saveProvider(updated);
         setProviders(dataService.getProviders());
         alert('Plano ativado com sucesso por 30 dias.');

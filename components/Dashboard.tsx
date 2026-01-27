@@ -102,7 +102,8 @@ export const Dashboard: React.FC = () => {
         const updated = { 
           ...provider, 
           status: ProviderStatus.ACTIVE,
-          dueDate: newDueDate.toISOString()
+          dueDate: newDueDate.toISOString(),
+          activatedAt: now.toISOString() // Tracking activation time
         };
         
         dataService.saveProvider(updated);
@@ -125,7 +126,6 @@ export const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <StatCard 
           title="Ativos" 
@@ -161,7 +161,6 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Central de Ativação Manual */}
         <div className="lg:col-span-8 space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
             <div className="flex items-center justify-between mb-8">
@@ -220,7 +219,6 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Chart Section */}
           <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
             <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-2">
               <TrendingUp className="text-indigo-600" /> Prestadores por Cidade
@@ -243,7 +241,6 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Sidebar Widgets */}
         <div className="lg:col-span-4 space-y-8">
           <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
             <div className="relative z-10">
@@ -292,7 +289,6 @@ export const Dashboard: React.FC = () => {
   );
 };
 
-// Internal icon for the widget
 function ShieldCheck({ size }: { size: number }) {
   return (
     <svg 

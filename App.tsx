@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { Layout as AdminLayout } from './components/Layout';
 import { ClientLayout } from './components/ClientLayout';
 import { Dashboard } from './components/Dashboard';
@@ -20,16 +20,25 @@ import { RegistrationFlow } from './components/RegistrationFlow';
 
 // Admin Auth Guard Component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    sessionStorage.getItem('admin_auth') === 'true'
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('admin_auth') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === '235600') {
-      sessionStorage.setItem('admin_auth', 'true');
+      try {
+        sessionStorage.setItem('admin_auth', 'true');
+      } catch (e) {
+        console.error("sessionStorage indisponível");
+      }
       setIsAuthenticated(true);
       setError(false);
     } else {
@@ -37,6 +46,11 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       setPassword('');
       setTimeout(() => setError(false), 2000);
     }
+  };
+
+  const goHome = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate('/');
   };
 
   if (!isAuthenticated) {
@@ -74,7 +88,7 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             <button 
               type="submit"
-              className="w-full py-5 bg-indigo-600 text-white font-black rounded-[1.5rem] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20 uppercase tracking-widest text-xs active:scale-95 group"
+              className="w-full py-5 bg-indigo-600 text-white font-black rounded-[1.5rem] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20 uppercase tracking-widest text-xs active:scale-95 group border-none cursor-pointer"
             >
               Acessar Painel 
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -82,9 +96,12 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </form>
 
           <div className="text-center">
-             <a href="/" className="text-slate-500 hover:text-white text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+             <button 
+                onClick={goHome}
+                className="text-slate-500 hover:text-white text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer w-full"
+             >
                 <Wrench size={14} /> Voltar para o Site
-             </a>
+             </button>
           </div>
         </div>
       </div>
@@ -111,6 +128,7 @@ const App: React.FC = () => {
                 <Route path="cidades" element={<CityManagement />} />
                 <Route path="relatorios" element={<Reports />} />
                 <Route path="mensagens" element={<MessageTemplates />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </AdminLayout>
           </AdminGuard>
@@ -123,6 +141,7 @@ const App: React.FC = () => {
               <Route index element={<ClientHome />} />
               <Route path="busca/:serviceId" element={<ClientProviderList />} />
               <Route path="cadastro" element={<RegistrationFlow />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </ClientLayout>
         } />

@@ -39,7 +39,7 @@ export const ClientProviderList: React.FC = () => {
   const currentService = services.find(s => s.id === serviceId);
 
   const openWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(`Olá ${name}, vi seu perfil no Serviços Já e preciso de um orçamento para ${currentService?.name}.`);
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil no Pronto! e preciso de um orçamento para ${currentService?.name}.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
@@ -174,7 +174,7 @@ export const ClientProviderList: React.FC = () => {
         <div className="relative z-10">
           <h4 className="font-black text-xl mb-2">Compromisso com Qualidade</h4>
           <p className="text-sm text-indigo-100 leading-relaxed font-medium max-w-lg">
-            O Serviços Já conecta você aos melhores profissionais. Combine valores, prazos e detalhes diretamente no WhatsApp.
+            O Pronto! conecta você aos melhores profissionais. Combine valores, prazos e detalhes diretamente no WhatsApp.
           </p>
         </div>
         <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>

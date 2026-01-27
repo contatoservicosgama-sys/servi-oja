@@ -25,27 +25,27 @@ export const INITIAL_TEMPLATES: MessageTemplate[] = [
   { 
     id: '1', 
     type: MessageType.REGISTRATION_CONFIRM, 
-    content: 'Olá! Seu cadastro no Serviços Já foi recebido com sucesso. Em breve analisaremos seus dados.' 
+    content: 'Olá! Seu cadastro na plataforma Pronto! foi recebido com sucesso. Em breve analisaremos seus dados.' 
   },
   { 
     id: '2', 
     type: MessageType.PAYMENT_APPROVED, 
-    content: 'Parabéns! Seu pagamento foi aprovado e seu anúncio já está ativo no Serviços Já.' 
+    content: 'Parabéns! Seu pagamento foi aprovado e seu anúncio já está ativo no Pronto!. Boas vendas!' 
   },
   { 
     id: '3', 
     type: MessageType.PAYMENT_REJECTED, 
-    content: 'Olá. Seu comprovante de pagamento PIX foi rejeitado. Por favor, envie um comprovante válido para ativar seu plano.' 
+    content: 'Olá. Seu comprovante de pagamento PIX foi rejeitado pela equipe do Pronto!. Por favor, envie um comprovante válido para ativar seu plano.' 
   },
   { 
     id: '4', 
     type: MessageType.PLAN_EXPIRED, 
-    content: 'Olá! Seu plano no Serviços Já venceu. Faça o PIX para continuar ativo e recebendo contatos.' 
+    content: 'Olá! Seu plano no Pronto! venceu. Faça o PIX para continuar ativo e aparecendo para novos clientes.' 
   },
   { 
     id: '5', 
     type: MessageType.BLOCK_NOTICE, 
-    content: 'Aviso: Seu perfil foi bloqueado por falta de pagamento. Regularize sua situação para voltar a receber contatos.' 
+    content: 'Aviso: Seu perfil no Pronto! foi bloqueado temporariamente. Regularize sua situação para voltar a receber contatos.' 
   },
 ];
 
@@ -59,7 +59,8 @@ export const INITIAL_PROVIDERS: Provider[] = [
     status: ProviderStatus.ACTIVE,
     dueDate: new Date(Date.now() + 86400000 * 5).toISOString(),
     createdAt: new Date().toISOString(),
-    description: 'Especialista em instalações residenciais, troca de fiação e reparos em geral. Atendimento rápido em BH.',
+    activatedAt: new Date().toISOString(),
+    description: 'Especialista em instalações residenciais, troca de fiação e reparos em geral. Atendimento rápido e garantido.',
     portfolioUrl: 'https://instagram.com'
   },
   {
@@ -71,7 +72,8 @@ export const INITIAL_PROVIDERS: Provider[] = [
     status: ProviderStatus.ACTIVE,
     dueDate: new Date(Date.now() + 86400000 * 15).toISOString(),
     createdAt: new Date().toISOString(),
-    description: 'Reparos de vazamentos, instalação de torneiras, vasos sanitários e limpeza de caixas d\'água.',
+    activatedAt: new Date().toISOString(),
+    description: 'Reparos de vazamentos, instalação de torneiras e vasos sanitários. Experiência de 10 anos.',
   },
   {
     id: 'p3',
@@ -82,7 +84,8 @@ export const INITIAL_PROVIDERS: Provider[] = [
     status: ProviderStatus.ACTIVE,
     dueDate: new Date(Date.now() + 86400000 * 2).toISOString(),
     createdAt: new Date().toISOString(),
-    description: 'Pintura residencial e comercial. Grafiato, textura e fino acabamento com 15 anos de experiência.',
+    activatedAt: new Date().toISOString(),
+    description: 'Pintura residencial e comercial de alto padrão. Grafiato e texturas.',
     portfolioUrl: 'https://behance.net'
   }
 ];

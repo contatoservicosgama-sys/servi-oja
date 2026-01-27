@@ -15,7 +15,9 @@ import {
   ChevronRight,
   ExternalLink,
   Globe,
-  Bell
+  Bell,
+  // Fix: Added missing CheckCircle2 import from lucide-react
+  CheckCircle2
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { dataService } from '../services/dataService';
@@ -44,7 +46,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       pendingProviders: providers.filter(p => p.status === ProviderStatus.PENDING).length,
       pendingPayments: payments.filter(p => p.status === PaymentStatus.PENDING).length
     };
-  }, [location.pathname]); // Atualiza ao navegar
+  }, [location.pathname]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -52,13 +54,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     if (confirm('Deseja encerrar sua sessão administrativa?')) {
       sessionStorage.removeItem('admin_auth');
       navigate('/');
-      window.location.reload();
     }
   };
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
-      {/* Sidebar Mobile Toggle */}
       <button 
         onClick={toggleSidebar}
         className="lg:hidden fixed top-4 right-4 z-50 p-3 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-200"
@@ -66,7 +66,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
       <aside 
         className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -75,11 +74,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="p-8">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
-              <Wrench className="text-white w-6 h-6" />
+              <CheckCircle2 className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                Serviços <span className="text-indigo-600">Já</span>
+                Pronto<span className="text-indigo-600">!</span>
               </h1>
               <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Painel Admin</p>
             </div>
@@ -135,13 +134,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-black text-slate-900 truncate">Administrador</p>
-                <p className="text-[10px] text-slate-400 truncate">admin@servicosja.com</p>
+                <p className="text-[10px] text-slate-400 truncate">admin@pronto.com</p>
               </div>
             </div>
           </div>
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm"
+            className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm border-none cursor-pointer bg-transparent"
           >
             <LogOut size={18} />
             <span>Encerrar Sessão</span>
@@ -149,7 +148,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 w-full min-h-screen overflow-x-hidden">
         <div className="max-w-7xl mx-auto p-6 lg:p-12 space-y-8 animate-in fade-in duration-500">
           {children}

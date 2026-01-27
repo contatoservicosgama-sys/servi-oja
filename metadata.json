@@ -1,6 +1,6 @@
 {
-  "name": "Painel Admin - Serviços Já",
-  "description": "Um painel administrativo completo para gestão de prestadores de serviços, controle de pagamentos PIX, vencimentos de planos e automação de mensagens via WhatsApp.",
+  "name": "Painel Admin - Pronto!",
+  "description": "Um painel administrativo completo para gestão de prestadores de serviços, controle de pagamentos PIX e automação de mensagens via WhatsApp sob a marca Pronto!.",
   "requestFramePermissions": [
     "camera"
   ]

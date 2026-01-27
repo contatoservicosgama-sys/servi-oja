@@ -43,6 +43,7 @@ export interface Provider {
   status: ProviderStatus;
   dueDate: string; // ISO string
   createdAt: string;
+  activatedAt?: string; // ISO string of last activation
   profileImage?: string;
   description?: string;
   portfolioUrl?: string;

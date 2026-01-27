@@ -1,6 +1,6 @@
 
-import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Zap, 
   Droplets, 
@@ -23,7 +23,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
-import { ProviderStatus } from '../types';
+import { ProviderStatus, Provider } from '../types';
 
 const getServiceIcon = (name: string) => {
   const n = name.toLowerCase();
@@ -44,17 +44,31 @@ export const ClientHome: React.FC = () => {
   const allServices = dataService.getServices();
   const services = allServices.filter(s => s.active);
   const cities = dataService.getCities();
+  const location = useLocation();
   
-  // Pegar os últimos 4 prestadores ativos para exibir na home
+  const [providers, setProviders] = useState<Provider[]>([]);
+
+  useEffect(() => {
+    try {
+      setProviders(dataService.getProviders());
+    } catch (e) {
+      console.error("Erro ao carregar prestadores:", e);
+    }
+  }, [location]);
+
   const featuredProviders = useMemo(() => {
-    return dataService.getProviders()
+    return providers
       .filter(p => p.status === ProviderStatus.ACTIVE)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => {
+        const timeA = new Date(a.activatedAt || a.createdAt).getTime();
+        const timeB = new Date(b.activatedAt || b.createdAt).getTime();
+        return timeB - timeA;
+      })
       .slice(0, 4);
-  }, []);
+  }, [providers]);
 
   const openWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(`Olá ${name}, vi seu perfil de destaque no Serviços Já e gostaria de um orçamento.`);
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil de destaque no Pronto! e gostaria de um orçamento.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
@@ -62,22 +76,22 @@ export const ClientHome: React.FC = () => {
     return ids
       .map(id => allServices.find(s => s.id === id)?.name)
       .filter(Boolean)
-      .slice(0, 2); // Mostra apenas os 2 primeiros para não poluir
+      .slice(0, 2);
   };
 
   return (
     <div className="space-y-16 animate-in fade-in duration-700 pb-12">
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="text-center space-y-6 pt-6">
         <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-bold border border-indigo-100 shadow-sm">
           <CheckCircle2 size={16} /> Solução rápida para sua casa
         </div>
         <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-          Serviços Já. <br />
+          Pronto<span className="text-indigo-600">!</span> <br />
           <span className="text-indigo-600">Chamou, resolveu.</span>
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto px-4 leading-relaxed">
-          Encontre os melhores profissionais em BH e Região. Atendimento direto via WhatsApp, sem intermediários.
+        <p className="text-lg text-slate-500 max-w-2xl mx-auto px-4 leading-relaxed font-medium">
+          Encontre os melhores profissionais em BH e Região. <br className="hidden sm:block" /> Atendimento direto via WhatsApp, sem intermediários.
         </p>
       </section>
 
@@ -89,7 +103,10 @@ export const ClientHome: React.FC = () => {
               <Star className="text-amber-500" fill="currentColor" size={20} />
               Profissionais em Destaque
             </h2>
-            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Recém Ativados</p>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full">Disponíveis agora</p>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -122,14 +139,16 @@ export const ClientHome: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => openWhatsApp(provider.phone, provider.name)}
-                  className="bg-emerald-500 text-white p-4 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95 shrink-0 ml-4"
-                  title="Conversar Agora"
+                  className="bg-emerald-500 text-white p-4 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95 shrink-0 ml-4 flex flex-col items-center gap-1 border-none cursor-pointer"
+                  title="Chamar agora no WhatsApp"
                 >
                   <MessageCircle size={24} />
+                  <span className="text-[8px] font-black uppercase tracking-widest">Zap</span>
                 </button>
               </div>
             ))}
           </div>
+          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] pt-2">Fale direto com o profissional acima para agilizar seu serviço</p>
         </section>
       )}
 
@@ -178,7 +197,7 @@ export const ClientHome: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-slate-900">Agilidade Total</h4>
-            <p className="text-sm text-slate-500 leading-snug">Conectamos você ao prestador em menos de 2 minutos.</p>
+            <p className="text-sm text-slate-500 leading-snug font-medium">Conectamos você ao prestador em menos de 2 minutos.</p>
           </div>
         </div>
         <div className="flex gap-4 items-start p-2">
@@ -187,7 +206,7 @@ export const ClientHome: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-slate-900">Contato Direto</h4>
-            <p className="text-sm text-slate-500 leading-snug">Sem intermediários. Você negocia direto no WhatsApp.</p>
+            <p className="text-sm text-slate-500 leading-snug font-medium">Sem intermediários. Você negocia direto no WhatsApp.</p>
           </div>
         </div>
         <div className="flex gap-4 items-start p-2">
@@ -196,7 +215,7 @@ export const ClientHome: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-slate-900">Segurança</h4>
-            <p className="text-sm text-slate-500 leading-snug">Apenas profissionais ativos e validados em nossa plataforma.</p>
+            <p className="text-sm text-slate-500 leading-snug font-medium">Apenas profissionais ativos e validados em nossa plataforma.</p>
           </div>
         </div>
       </section>
