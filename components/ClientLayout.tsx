@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Wrench, UserPlus, Home as HomeIcon, ShieldCheck, LogIn, CheckCircle2, Hammer } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Home as HomeIcon, UserPlus, ShieldCheck, Hammer } from 'lucide-react';
 
 export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -12,7 +12,11 @@ export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleNavigate = (path: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate(path);
+    try {
+      navigate(path);
+    } catch (err) {
+      console.warn("Navegação bloqueada pelo ambiente.");
+    }
   };
 
   return (
@@ -20,18 +24,31 @@ export const ClientLayout: React.FC<{ children: React.ReactNode }> = ({ children
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" onClick={handleNavigate('/')} className="flex items-center gap-2 no-underline group">
+          <button 
+            onClick={handleNavigate('/')} 
+            className="flex items-center gap-2 no-underline group bg-transparent border-none cursor-pointer text-left p-0"
+          >
             <div className="bg-indigo-600 p-1.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
               <Hammer className="text-white w-5 h-5" />
             </div>
             <span className="font-extrabold text-xl tracking-tight text-slate-900">
               Sua Mão <span className="text-indigo-600">de Obra</span>
             </span>
-          </Link>
+          </button>
           
           <nav className="hidden sm:flex items-center gap-6">
-            <Link to="/" onClick={handleNavigate('/')} className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors no-underline">Início</Link>
-            <Link to="/cadastro" onClick={handleNavigate('/cadastro')} className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors no-underline">Seja um Parceiro</Link>
+            <button 
+              onClick={handleNavigate('/')} 
+              className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors bg-transparent border-none cursor-pointer"
+            >
+              Início
+            </button>
+            <button 
+              onClick={handleNavigate('/cadastro')} 
+              className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors bg-transparent border-none cursor-pointer"
+            >
+              Seja um Parceiro
+            </button>
             <div className="w-px h-4 bg-slate-200"></div>
             <button 
               onClick={handleNavigate('/admin')}

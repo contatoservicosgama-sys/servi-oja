@@ -18,12 +18,21 @@ const STORAGE_KEYS = {
 
 class DataService {
   private get<T>(key: string, initial: T): T {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : initial;
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : initial;
+    } catch (e) {
+      console.warn("Storage access denied for key:", key);
+      return initial;
+    }
   }
 
   private set<T>(key: string, data: T): void {
-    localStorage.setItem(key, JSON.stringify(data));
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      console.warn("Storage write denied for key:", key);
+    }
   }
 
   // Providers

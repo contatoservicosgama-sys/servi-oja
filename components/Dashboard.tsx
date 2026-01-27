@@ -28,7 +28,7 @@ import {
 } from 'recharts';
 import { dataService } from '../services/dataService';
 import { ProviderStatus, PaymentStatus } from '../types';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const StatCard: React.FC<{
   title: string;
@@ -59,6 +59,7 @@ export const Dashboard: React.FC = () => {
   const [providers, setProviders] = useState(dataService.getProviders());
   const payments = dataService.getPayments();
   const cities = dataService.getCities();
+  const navigate = useNavigate();
 
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -103,7 +104,7 @@ export const Dashboard: React.FC = () => {
           ...provider, 
           status: ProviderStatus.ACTIVE,
           dueDate: newDueDate.toISOString(),
-          activatedAt: now.toISOString() // Tracking activation time
+          activatedAt: now.toISOString() 
         };
         
         dataService.saveProvider(updated);
@@ -111,6 +112,11 @@ export const Dashboard: React.FC = () => {
         alert(`Ativação Manual Concluída!\n\nPrestador: ${provider.name}\nNovo Vencimento: ${newDueDate.toLocaleDateString('pt-BR')}`);
       }
     }
+  };
+
+  const handleSafeNavigate = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    try { navigate(path); } catch (err) {}
   };
 
   return (
@@ -171,7 +177,7 @@ export const Dashboard: React.FC = () => {
                  </h3>
                  <p className="text-xs text-slate-400 font-black uppercase tracking-widest">Confira o banco antes de ativar</p>
                </div>
-               <Link to="/admin/prestadores" className="text-xs font-black text-indigo-600 hover:underline uppercase tracking-widest">Ver todos</Link>
+               <button onClick={handleSafeNavigate('/admin/prestadores')} className="text-xs font-black text-indigo-600 hover:underline uppercase tracking-widest bg-transparent border-none cursor-pointer">Ver todos</button>
             </div>
 
             <div className="space-y-4">
@@ -195,7 +201,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={() => handleManualActivate(provider.id)}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95 border-none cursor-pointer"
                     >
                       <CheckCircle2 size={14} /> Confirmar PIX e Ativar
                     </button>

@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { Layout as AdminLayout } from './components/Layout';
 import { ClientLayout } from './components/ClientLayout';
 import { Dashboard } from './components/Dashboard';
@@ -18,7 +18,6 @@ import { ClientHome } from './components/ClientHome';
 import { ClientProviderList } from './components/ClientProviderList';
 import { RegistrationFlow } from './components/RegistrationFlow';
 
-// Admin Auth Guard Component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
@@ -36,12 +35,9 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (password === '235600') {
       try {
         sessionStorage.setItem('admin_auth', 'true');
-        setIsAuthenticated(true);
-        setError(false);
-      } catch (err) {
-        console.warn("Acesso ao storage negado, mantendo sessão em memória.");
-        setIsAuthenticated(true);
-      }
+      } catch (err) {}
+      setIsAuthenticated(true);
+      setError(false);
     } else {
       setError(true);
       setPassword('');
@@ -53,9 +49,7 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     e.preventDefault();
     try {
       navigate('/');
-    } catch (err) {
-      console.error("Navegação bloqueada pelo navegador.");
-    }
+    } catch (err) {}
   };
 
   if (!isAuthenticated) {
@@ -86,25 +80,15 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   onChange={e => setPassword(e.target.value)}
                 />
               </div>
-              {error && (
-                <p className="text-rose-400 text-xs font-black text-center animate-pulse mt-2 uppercase tracking-widest">Senha Incorreta!</p>
-              )}
+              {error && <p className="text-rose-400 text-xs font-black text-center animate-pulse mt-2 uppercase tracking-widest">Senha Incorreta!</p>}
             </div>
 
-            <button 
-              type="submit"
-              className="w-full py-5 bg-indigo-600 text-white font-black rounded-[1.5rem] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20 uppercase tracking-widest text-xs active:scale-95 group border-none cursor-pointer"
-            >
-              Entrar Agora 
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            <button type="submit" className="w-full py-5 bg-indigo-600 text-white font-black rounded-[1.5rem] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20 uppercase tracking-widest text-xs active:scale-95 group border-none cursor-pointer">
+              Entrar Agora <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
-
           <div className="text-center">
-             <button 
-                onClick={handleGoHome}
-                className="text-slate-500 hover:text-indigo-400 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer w-full"
-             >
+             <button onClick={handleGoHome} className="text-slate-500 hover:text-indigo-400 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer w-full">
                 <Hammer size={14} /> Voltar para o Site Público
              </button>
           </div>
@@ -127,13 +111,10 @@ const App: React.FC = () => {
         <Route path="/admin/servicos" element={<AdminGuard><AdminLayout><ServiceManagement /></AdminLayout></AdminGuard>} />
         <Route path="/admin/cidades" element={<AdminGuard><AdminLayout><CityManagement /></AdminLayout></AdminGuard>} />
         <Route path="/admin/relatorios" element={<AdminGuard><AdminLayout><Reports /></AdminLayout></AdminGuard>} />
-        <Route path="/admin/mensagens" element={<AdminGuard><AdminLayout><MessageTemplates /></AdminLayout></AdminGuard>} />
-        
+        <Route path="/admin/mensagens" element={<AdminGuard><AdminLayout><MessageTemplates /></AdminGuard>} />
         <Route path="/" element={<ClientLayout><ClientHome /></ClientLayout>} />
         <Route path="/busca/:serviceId" element={<ClientLayout><ClientProviderList /></ClientLayout>} />
         <Route path="/cadastro" element={<ClientLayout><RegistrationFlow /></ClientLayout>} />
-        
-        {/* Fallback direto para evitar Location.assign errors em sandboxes */}
         <Route path="*" element={<ClientLayout><ClientHome /></ClientLayout>} />
       </Routes>
     </Router>
