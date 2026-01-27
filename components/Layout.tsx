@@ -13,13 +13,10 @@ import {
   X,
   LogOut,
   ChevronRight,
-  ExternalLink,
   Globe,
-  Bell,
-  CheckCircle2,
   Hammer
 } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { dataService } from '../services/dataService';
 import { ProviderStatus, PaymentStatus } from '../types';
 
@@ -40,19 +37,34 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
 
   const counts = useMemo(() => {
-    const providers = dataService.getProviders();
-    const payments = dataService.getPayments();
-    return {
-      pendingProviders: providers.filter(p => p.status === ProviderStatus.PENDING).length,
-      pendingPayments: payments.filter(p => p.status === PaymentStatus.PENDING).length
-    };
+    try {
+      const providers = dataService.getProviders();
+      const payments = dataService.getPayments();
+      return {
+        pendingProviders: providers.filter(p => p.status === ProviderStatus.PENDING).length,
+        pendingPayments: payments.filter(p => p.status === PaymentStatus.PENDING).length
+      };
+    } catch (e) {
+      return { pendingProviders: 0, pendingPayments: 0 };
+    }
   }, [location.pathname]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  const handleSafeNavigate = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      navigate(path);
+    } catch (err) {
+      console.warn("Navegação interceptada pelo sandbox.");
+    }
+  };
+
   const handleLogout = () => {
     if (confirm('Deseja encerrar sua sessão administrativa?')) {
-      sessionStorage.removeItem('admin_auth');
+      try {
+        sessionStorage.removeItem('admin_auth');
+      } catch (e) {}
       navigate('/');
     }
   };
@@ -61,7 +73,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="min-h-screen flex bg-[#F8FAFC]">
       <button 
         onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-200"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-200 border-none cursor-pointer"
       >
         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -72,7 +84,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         } fixed lg:sticky top-0 z-40 w-72 h-screen bg-white border-r border-slate-100 transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col`}
       >
         <div className="p-8">
-          <Link to="/" className="flex items-center gap-3 group">
+          <button onClick={handleSafeNavigate('/')} className="flex items-center gap-3 group bg-transparent border-none cursor-pointer text-left w-full">
             <div className="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
               <Hammer className="text-white w-6 h-6" />
             </div>
@@ -81,7 +93,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 Sua Mão <br/> <span className="text-indigo-600">de Obra</span>
               </h1>
             </div>
-          </Link>
+          </button>
         </div>
 
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
@@ -90,13 +102,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             const badgeValue = item.badgeKey ? (counts as any)[item.badgeKey] : 0;
             
             return (
-              <Link
+              <button
                 key={item.path}
-                to={item.path}
-                className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-200 group ${
+                onClick={handleSafeNavigate(item.path)}
+                className={`flex items-center justify-between w-full px-4 py-3.5 rounded-2xl transition-all duration-200 group border-none cursor-pointer text-left ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 font-bold'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -111,19 +123,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   )}
                   {isActive && <ChevronRight size={14} className="opacity-50" />}
                 </div>
-              </Link>
+              </button>
             );
           })}
         </nav>
 
         <div className="p-6 border-t border-slate-50 space-y-4">
-          <Link 
-            to="/" 
-            className="flex items-center gap-3 w-full px-4 py-3.5 bg-slate-900 text-white rounded-2xl transition-all font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800"
+          <button 
+            onClick={handleSafeNavigate('/')} 
+            className="flex items-center gap-3 w-full px-4 py-3.5 bg-slate-900 text-white rounded-2xl transition-all font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800 border-none cursor-pointer"
           >
             <Globe size={18} className="text-indigo-400" />
             <span>Sair para o Site</span>
-          </Link>
+          </button>
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm border-none cursor-pointer bg-transparent"

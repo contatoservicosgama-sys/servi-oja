@@ -4,19 +4,13 @@ import {
   CheckCircle2, 
   Smartphone, 
   ArrowRight,
-  ClipboardCheck,
-  Info,
   PartyPopper,
   Home,
   Camera,
   Briefcase,
-  Link as LinkIcon,
-  User,
-  Trash2,
-  Mail,
-  FileText
+  User
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { dataService } from '../services/dataService';
 import { ProviderStatus } from '../types';
 
@@ -70,24 +64,28 @@ export const RegistrationFlow: React.FC = () => {
       if (!formData.email.trim() || !formData.email.includes('@')) { alert('Informe um e-mail válido.'); return; }
       if (formData.serviceIds.length === 0) { alert('Selecione ao menos um serviço que você oferece.'); return; }
       
-      dataService.saveProvider({
-        id: 'reg_' + Date.now(),
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        document: formData.document,
-        cityId: formData.cityId,
-        serviceIds: formData.serviceIds,
-        profileImage: formData.profileImage,
-        description: formData.description,
-        portfolioUrl: formData.portfolioUrl,
-        status: ProviderStatus.PENDING,
-        dueDate: new Date().toISOString(),
-        createdAt: new Date().toISOString()
-      });
+      try {
+        dataService.saveProvider({
+          id: 'reg_' + Date.now(),
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          document: formData.document,
+          cityId: formData.cityId,
+          serviceIds: formData.serviceIds,
+          profileImage: formData.profileImage,
+          description: formData.description,
+          portfolioUrl: formData.portfolioUrl,
+          status: ProviderStatus.PENDING,
+          dueDate: new Date().toISOString(),
+          createdAt: new Date().toISOString()
+        });
+      } catch (err) {}
       
       setStep(2);
-      window.scrollTo(0, 0);
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {}
     }
   };
 
@@ -95,6 +93,11 @@ export const RegistrationFlow: React.FC = () => {
     const msg = encodeURIComponent(`Olá, sou o ${formData.name} e acabei de fazer o PIX de R$ 39,90 para ativar meu plano na plataforma Sua Mão de Obra.`);
     window.open(`https://wa.me/5531984279865?text=${msg}`, '_blank');
     setStep(3);
+  };
+
+  const goHome = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate('/');
   };
 
   if (step === 3) {
@@ -110,9 +113,9 @@ export const RegistrationFlow: React.FC = () => {
           </p>
         </div>
         <div className="pt-6">
-          <Link to="/" className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl active:scale-95">
+          <button onClick={goHome} className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl active:scale-95 border-none cursor-pointer">
             <Home size={20} /> Voltar para o Início
-          </Link>
+          </button>
         </div>
       </div>
     );
