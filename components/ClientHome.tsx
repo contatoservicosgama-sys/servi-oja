@@ -68,7 +68,7 @@ export const ClientHome: React.FC = () => {
   }, [providers]);
 
   const openWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(`Olá ${name}, vi seu perfil de destaque no Pronto! e gostaria de um orçamento.`);
+    const text = encodeURIComponent(`Olá ${name}, vi seu perfil na plataforma Sua Mão de Obra e gostaria de um orçamento.`);
     window.open(`https://wa.me/55${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
@@ -84,14 +84,14 @@ export const ClientHome: React.FC = () => {
       {/* Hero Section */}
       <section className="text-center space-y-6 pt-6">
         <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-bold border border-indigo-100 shadow-sm">
-          <CheckCircle2 size={16} /> Solução rápida para sua casa
+          <CheckCircle2 size={16} /> Profissionais de confiança
         </div>
         <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-          Pronto<span className="text-indigo-600">!</span> <br />
-          <span className="text-indigo-600">Chamou, resolveu.</span>
+          Sua Mão <span className="text-indigo-600">de Obra</span> <br />
+          <span className="text-indigo-600 text-3xl sm:text-4xl font-black">Qualidade em cada detalhe.</span>
         </h1>
         <p className="text-lg text-slate-500 max-w-2xl mx-auto px-4 leading-relaxed font-medium">
-          Encontre os melhores profissionais em BH e Região. <br className="hidden sm:block" /> Atendimento direto via WhatsApp, sem intermediários.
+          Encontre os melhores profissionais para sua casa ou empresa. <br className="hidden sm:block" /> Negocie direto no WhatsApp, sem taxas extras.
         </p>
       </section>
 
@@ -101,11 +101,11 @@ export const ClientHome: React.FC = () => {
           <div className="flex items-center justify-between px-2">
             <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
               <Star className="text-amber-500" fill="currentColor" size={20} />
-              Profissionais em Destaque
+              Destaques da Região
             </h2>
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full">Disponíveis agora</p>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full">Ativos agora</p>
             </div>
           </div>
           
@@ -139,36 +139,31 @@ export const ClientHome: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => openWhatsApp(provider.phone, provider.name)}
-                  className="bg-emerald-500 text-white p-4 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95 shrink-0 ml-4 flex flex-col items-center gap-1 border-none cursor-pointer"
-                  title="Chamar agora no WhatsApp"
+                  className="bg-emerald-500 text-white p-4 rounded-2xl shadow-lg shadow-emerald-100 group-hover:scale-110 transition-all active:scale-95 shrink-0 ml-4 border-none cursor-pointer flex flex-col items-center gap-0.5"
                 >
-                  <MessageCircle size={24} />
-                  <span className="text-[8px] font-black uppercase tracking-widest">Zap</span>
+                  <MessageCircle size={22} />
+                  <span className="text-[8px] font-black uppercase">Zap</span>
                 </button>
               </div>
             ))}
           </div>
-          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] pt-2">Fale direto com o profissional acima para agilizar seu serviço</p>
         </section>
       )}
 
       {/* Categories Grid */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between px-2">
-          <h2 className="text-xl font-bold text-slate-900">Qual serviço você precisa?</h2>
-        </div>
-        
+        <h2 className="text-xl font-bold text-slate-900 px-2">Categorias de Serviço</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {services.map((service) => (
             <Link 
               key={service.id}
               to={`/busca/${service.id}`}
-              className="group bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 hover:border-indigo-200 transition-all duration-300 flex flex-col items-center text-center gap-4 active:scale-95"
+              className="group bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-300 flex flex-col items-center text-center gap-4 active:scale-95"
             >
-              <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 transform group-hover:rotate-6">
+              <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-6">
                 {getServiceIcon(service.name)}
               </div>
-              <span className="font-bold text-slate-800 text-sm sm:text-base leading-tight group-hover:text-indigo-600 transition-colors">
+              <span className="font-bold text-slate-800 text-sm group-hover:text-indigo-600">
                 {service.name}
               </span>
             </Link>
@@ -178,12 +173,12 @@ export const ClientHome: React.FC = () => {
             to="/cadastro"
             className="group bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl hover:bg-slate-800 transition-all flex flex-col items-center justify-center text-center gap-3 active:scale-95"
           >
-            <div className="bg-slate-800 p-3 rounded-xl group-hover:bg-slate-700 transition-colors">
+            <div className="bg-slate-800 p-3 rounded-xl">
               <UserPlus className="w-6 h-6 text-indigo-400" />
             </div>
-            <span className="text-white font-bold text-sm">É profissional?</span>
-            <span className="text-indigo-400 text-xs flex items-center gap-1 font-semibold">
-              Comece agora <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            <span className="text-white font-bold text-sm">Trabalhe Conosco</span>
+            <span className="text-indigo-400 text-[10px] flex items-center gap-1 font-black uppercase tracking-widest">
+              Começar <ArrowRight size={14} />
             </span>
           </Link>
         </div>
@@ -191,31 +186,31 @@ export const ClientHome: React.FC = () => {
 
       {/* Trust Points */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-slate-200">
-        <div className="flex gap-4 items-start p-2">
-          <div className="shrink-0 w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
+        <div className="flex gap-4 items-start">
+          <div className="shrink-0 w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
             <Zap size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900">Agilidade Total</h4>
-            <p className="text-sm text-slate-500 leading-snug font-medium">Conectamos você ao prestador em menos de 2 minutos.</p>
+            <h4 className="font-bold text-slate-900">Agilidade</h4>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">Conectamos você ao profissional certo em instantes.</p>
           </div>
         </div>
-        <div className="flex gap-4 items-start p-2">
+        <div className="flex gap-4 items-start">
           <div className="shrink-0 w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
             <Search size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900">Contato Direto</h4>
-            <p className="text-sm text-slate-500 leading-snug font-medium">Sem intermediários. Você negocia direto no WhatsApp.</p>
+            <h4 className="font-bold text-slate-900">Transparência</h4>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">Negocie valores diretamente, sem surpresas no final.</p>
           </div>
         </div>
-        <div className="flex gap-4 items-start p-2">
-          <div className="shrink-0 w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
+        <div className="flex gap-4 items-start">
+          <div className="shrink-0 w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
             <CheckCircle2 size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900">Segurança</h4>
-            <p className="text-sm text-slate-500 leading-snug font-medium">Apenas profissionais ativos e validados em nossa plataforma.</p>
+            <h4 className="font-bold text-slate-900">Qualidade</h4>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">Apenas prestadores ativos e avaliados pela comunidade.</p>
           </div>
         </div>
       </section>

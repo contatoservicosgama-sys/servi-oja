@@ -16,8 +16,8 @@ import {
   ExternalLink,
   Globe,
   Bell,
-  // Fix: Added missing CheckCircle2 import from lucide-react
-  CheckCircle2
+  CheckCircle2,
+  Hammer
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { dataService } from '../services/dataService';
@@ -73,14 +73,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       >
         <div className="p-8">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="text-white w-6 h-6" />
+            <div className="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
+              <Hammer className="text-white w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                Pronto<span className="text-indigo-600">!</span>
+              <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                Sua Mão <br/> <span className="text-indigo-600">de Obra</span>
               </h1>
-              <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Painel Admin</p>
             </div>
           </Link>
         </div>
@@ -106,7 +105,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </div>
                 <div className="flex items-center gap-2">
                   {badgeValue > 0 && !isActive && (
-                    <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                    <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
                       {badgeValue}
                     </span>
                   )}
@@ -124,20 +123,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           >
             <Globe size={18} className="text-indigo-400" />
             <span>Sair para o Site</span>
-            <ExternalLink size={14} className="ml-auto opacity-50" />
           </Link>
-
-          <div className="bg-slate-50 rounded-2xl p-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
-                AD
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-slate-900 truncate">Administrador</p>
-                <p className="text-[10px] text-slate-400 truncate">admin@pronto.com</p>
-              </div>
-            </div>
-          </div>
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-bold text-sm border-none cursor-pointer bg-transparent"

@@ -1,6 +1,6 @@
 {
-  "name": "Painel Admin - Pronto!",
-  "description": "Um painel administrativo completo para gestão de prestadores de serviços, controle de pagamentos PIX e automação de mensagens via WhatsApp sob a marca Pronto!.",
+  "name": "Sua Mão de Obra - Admin",
+  "description": "Painel de gestão para a plataforma Sua Mão de Obra, conectando clientes a prestadores qualificados.",
   "requestFramePermissions": [
     "camera"
   ]

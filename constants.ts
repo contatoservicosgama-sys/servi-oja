@@ -25,27 +25,27 @@ export const INITIAL_TEMPLATES: MessageTemplate[] = [
   { 
     id: '1', 
     type: MessageType.REGISTRATION_CONFIRM, 
-    content: 'Olá! Seu cadastro na plataforma Pronto! foi recebido com sucesso. Em breve analisaremos seus dados.' 
+    content: 'Olá! Seu cadastro na plataforma Sua Mão de Obra foi recebido com sucesso. Em breve analisaremos seus dados.' 
   },
   { 
     id: '2', 
     type: MessageType.PAYMENT_APPROVED, 
-    content: 'Parabéns! Seu pagamento foi aprovado e seu anúncio já está ativo no Pronto!. Boas vendas!' 
+    content: 'Parabéns! Seu pagamento foi aprovado e seu anúncio já está ativo no Sua Mão de Obra. Boas vendas!' 
   },
   { 
     id: '3', 
     type: MessageType.PAYMENT_REJECTED, 
-    content: 'Olá. Seu comprovante de pagamento PIX foi rejeitado pela equipe do Pronto!. Por favor, envie um comprovante válido para ativar seu plano.' 
+    content: 'Olá. Seu comprovante de pagamento foi rejeitado pela equipe do Sua Mão de Obra. Por favor, envie um comprovante válido.' 
   },
   { 
     id: '4', 
     type: MessageType.PLAN_EXPIRED, 
-    content: 'Olá! Seu plano no Pronto! venceu. Faça o PIX para continuar ativo e aparecendo para novos clientes.' 
+    content: 'Olá! Seu plano no Sua Mão de Obra venceu. Renove agora para continuar recebendo novos clientes.' 
   },
   { 
     id: '5', 
     type: MessageType.BLOCK_NOTICE, 
-    content: 'Aviso: Seu perfil no Pronto! foi bloqueado temporariamente. Regularize sua situação para voltar a receber contatos.' 
+    content: 'Aviso: Seu perfil no Sua Mão de Obra foi bloqueado temporariamente por falta de pagamento ou denúncia.' 
   },
 ];
 
@@ -60,7 +60,7 @@ export const INITIAL_PROVIDERS: Provider[] = [
     dueDate: new Date(Date.now() + 86400000 * 5).toISOString(),
     createdAt: new Date().toISOString(),
     activatedAt: new Date().toISOString(),
-    description: 'Especialista em instalações residenciais, troca de fiação e reparos em geral. Atendimento rápido e garantido.',
+    description: 'Especialista em instalações residenciais e reparos elétricos rápidos.',
     portfolioUrl: 'https://instagram.com'
   },
   {
@@ -73,20 +73,7 @@ export const INITIAL_PROVIDERS: Provider[] = [
     dueDate: new Date(Date.now() + 86400000 * 15).toISOString(),
     createdAt: new Date().toISOString(),
     activatedAt: new Date().toISOString(),
-    description: 'Reparos de vazamentos, instalação de torneiras e vasos sanitários. Experiência de 10 anos.',
-  },
-  {
-    id: 'p3',
-    name: 'Carlos Pinturas',
-    phone: '31977777777',
-    cityId: '1',
-    serviceIds: ['6'],
-    status: ProviderStatus.ACTIVE,
-    dueDate: new Date(Date.now() + 86400000 * 2).toISOString(),
-    createdAt: new Date().toISOString(),
-    activatedAt: new Date().toISOString(),
-    description: 'Pintura residencial e comercial de alto padrão. Grafiato e texturas.',
-    portfolioUrl: 'https://behance.net'
+    description: 'Reparos de vazamentos e instalação de louças sanitárias.',
   }
 ];
 
